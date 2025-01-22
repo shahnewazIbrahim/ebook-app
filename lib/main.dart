@@ -91,6 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Color _getButtonColor(String? buttonValue) {
+    if (buttonValue == 'Read E-Book') {
+      return Colors.blue; // Blue for 'Read E-Book'
+    } else if (buttonValue == 'Renew Softcopy') {
+      return Colors.red; // Red for 'Renew Softcopy'
+    } else if (buttonValue == 'Continue') {
+      return Colors.yellow; // Yellow for 'Continue'
+    } else {
+      return Colors.grey; // Default color if no match
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,14 +135,29 @@ class _MyHomePageState extends State<MyHomePage> {
                     trailing: ebook['button'] != null &&
                             ebook['button']['status'] == true
                         ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _getButtonColor(ebook['button']
+                                  ['value']), // Set the color conditionally
+                              foregroundColor:
+                                  ebook['button']['value'] == 'Continue'
+                                      ? Colors.black
+                                      : Colors.white,
+                            ),
                             onPressed: () {
                               _launchURL(ebook['button']
                                   ['link']); // Open the link when clicked
                             },
-                            child: Text(ebook['button']['value'] ??
+                            child: Text((ebook['button']['value'] ==
+                                        'Renew Softcopy'
+                                    ? 'Renew'
+                                    : (ebook['button']['value'] == 'Read E-Book'
+                                        ? 'Read'
+                                        : ebook['button']['value'])) ??
                                 'Link'), // Fallback if 'value' is null
                           )
-                        : Container(), // Return an empty container if status is false or button is null
+                        : Container(), // Show nothing if condition is not met
+                    // Show nothing if condition is not met
+                    // Return an empty container if status is false or button is null
 
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
