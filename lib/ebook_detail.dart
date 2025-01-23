@@ -1,5 +1,6 @@
 import 'dart:convert'; // For JSON decoding
 
+import 'package:ebook_project/api/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,11 +31,10 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
             "Bearer 24481|pHCYJ0aZvP04Js9SM076EzrGsUmqdTpZnFRcOvWE",
       };
 
-      final String apiUrl =
-          "http://127.0.0.1:8000/api/v1/ebooks/${widget.ebook['id']}";
+      var apiUrl = getFullUrl("/v1/ebooks/${widget.ebook['id']}");
 
       final response = await http.get(
-        Uri.parse(apiUrl),
+        apiUrl,
         headers: headers,
       );
 

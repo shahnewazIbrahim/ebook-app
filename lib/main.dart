@@ -1,11 +1,13 @@
 import 'dart:convert'; // For JSON decoding
 
+import 'package:ebook_project/api/routes.dart';
 import 'package:ebook_project/ebook_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // For API requests
 import 'package:url_launcher/url_launcher.dart'; // For opening URLs
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -39,7 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isLoading = true;
 
   // API Endpoint
-  final String apiUrl = "http://127.0.0.1:8000/api/v1/ebooks";
+  // final String apiUrl = "http://127.0.0.1:8000/api/v1/ebooks";
+  var apiUrl = getFullUrl('/v1/ebooks');
   // Replace with your API URL
 
   @override
@@ -57,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       };
 
       final response = await http.get(
-        Uri.parse(apiUrl),
+        apiUrl,
         headers: headers,
       );
 
