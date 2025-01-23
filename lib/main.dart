@@ -1,5 +1,6 @@
 import 'dart:convert'; // For JSON decoding
 
+import 'package:ebook_project/ebook_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // For API requests
 import 'package:url_launcher/url_launcher.dart'; // For opening URLs
@@ -198,7 +199,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                       horizontal: 12.0, vertical: 8.0),
                                 ),
                                 onPressed: () {
-                                  _launchURL(ebook['button']['link']);
+                                  ebook['button']['value'] == 'Read E-Book'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EbookDetailPage(
+                                              ebook: ebook,
+                                            ),
+                                            settings: RouteSettings(
+                                                name:
+                                                    '/my-ebooks/${ebook['id']}'),
+                                          ),
+                                        )
+                                      : _launchURL(ebook['button']['link']);
                                 },
                                 child: Text(
                                   ebook['button']['value'] == 'Renew Softcopy'
