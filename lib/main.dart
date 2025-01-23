@@ -112,62 +112,122 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
+          : GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // Two cards per row
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 1.2, // Adjust based on design
+              ),
               itemCount: ebooks.length,
+              padding: const EdgeInsets.all(8.0),
               itemBuilder: (context, index) {
                 final ebook = ebooks[index];
 
                 return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    leading: ebook['image'] != null && ebook['image'].isNotEmpty
-                        ? CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                ebook['image']), // Load image from URL
-                          )
-                        : CircleAvatar(
-                            child: Text(ebook['name'][
-                                0]), // Fallback to the first letter if no image
-                          ),
-
-                    title: Text(ebook['name']),
-                    // subtitle: Text('Valid until: ${ebook['ending']}'),
-                    trailing: ebook['button'] != null &&
-                            ebook['button']['status'] == true
-                        ? ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _getButtonColor(ebook['button']
-                                  ['value']), // Set the color conditionally
-                              foregroundColor:
-                                  ebook['button']['value'] == 'Continue'
-                                      ? Colors.black
-                                      : Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            ebook['image'] != null && ebook['image'].isNotEmpty
+                                ? CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage:
+                                        NetworkImage(ebook['image']),
+                                  )
+                                : CircleAvatar(
+                                    radius: 20,
+                                    child: Text(
+                                      ebook['name'][0],
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ),
+                            const SizedBox(width: 8.0),
+                            Expanded(
+                              child: Text(
+                                ebook['name'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            onPressed: () {
-                              _launchURL(ebook['button']
-                                  ['link']); // Open the link when clicked
-                            },
-                            child: Text((ebook['button']['value'] ==
-                                        'Renew Softcopy'
-                                    ? 'Renew'
-                                    : (ebook['button']['value'] == 'Read E-Book'
-                                        ? 'Read'
-                                        : ebook['button']['value'])) ??
-                                'Link'), // Fallback if 'value' is null
-                          )
-                        : Container(), // Show nothing if condition is not met
-                    // Show nothing if condition is not met
-                    // Return an empty container if status is false or button is null
-
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Selected: ${ebook['name']}')),
-                      );
-                    },
-                    // Add the button as an ElevatedButton
-                    isThreeLine: true, // Allow 3 lines in the ListTile
-                    contentPadding: EdgeInsets.all(16),
-                    subtitle: Text('Valid until: ${ebook['ending']}'),
+                          ],
+                        ),
+                        const SizedBox(height: 12.0),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 4.0),
+                              decoration: BoxDecoration(
+                                color: ebook['status'] == 'Active'
+                                    ? Colors.green
+                                    : Colors.red,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                ebook['status'] == 'Active'
+                                    ? 'Active'
+                                    : 'Expired',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                            if (ebook['button'] != null &&
+                                ebook['button']['status'] == true)
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _getButtonColor(
+                                      ebook['button']
+                                          ['value']), // Conditional color
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0, vertical: 8.0),
+                                ),
+                                onPressed: () {
+                                  _launchURL(ebook['button']['link']);
+                                },
+                                child: Text(
+                                  ebook['button']['value'] == 'Renew Softcopy'
+                                      ? 'Renew'
+                                      : ebook['button']['value'] ==
+                                              'Read E-Book'
+                                          ? 'Read'
+                                          : ebook['button']['value'] ?? 'Link',
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          'Duration: ${ebook['duration']}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          'Ending: ${ebook['ending']}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
