@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
     fetchEbooks();
   }
 
-  Future<void> fetchEbooks() async {
+  Future<List<Ebook>> fetchEbooks() async {
     try {
       var headers = {
         "Content-Type": "application/json",
@@ -81,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // Handle any exceptions
       print("Error fetching ebooks: $error");
     }
+    return ebooks;
   }
 
   // Function to open the URL in the browser
