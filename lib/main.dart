@@ -2,6 +2,7 @@ import 'dart:convert'; // For JSON decoding
 
 import 'package:ebook_project/api/routes.dart';
 import 'package:ebook_project/ebook_detail.dart';
+import 'package:ebook_project/models/ebook.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // For API requests
 import 'package:url_launcher/url_launcher.dart'; // For opening URLs
@@ -37,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<dynamic> ebooks = []; // Change to List<dynamic>
+  List<Ebook> ebooks = []; // Change to List<dynamic>
   bool isLoading = true;
 
   // API Endpoint
@@ -55,8 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       var headers = {
         "Content-Type": "application/json",
-        "Authorization":
-            "Bearer 24481|pHCYJ0aZvP04Js9SM076EzrGsUmqdTpZnFRcOvWE",
+        "Authorization": "Bearer 24481|pHCYJ0aZvP04Js9SM076EzrGsUmqdTpZnFRcOvWE",
       };
 
       final response = await http.get(
@@ -68,13 +68,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // Success - Parse the JSON response
         final data = json.decode(response.body);
         setState(() {
-          ebooks = data['0']; // Access the ebook list
+          ebooks = (data['0'] as List).map((e) => Ebook.fromJson(e)).toList();
           isLoading = false;
         });
       } else {
         // Handle error responses
-        print(
-            "Failed to fetch ebooks: ${response.statusCode}, ${response.body}");
+        print("Failed to fetch ebooks: ${response.statusCode}, ${response.body}");
       }
     } catch (error) {
       // Handle any exceptions
@@ -140,23 +139,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Row(
                           children: [
-                            ebook['image'] != null && ebook['image'].isNotEmpty
+                            ebook.image.isNotEmpty
                                 ? CircleAvatar(
                                     radius: 20,
-                                    backgroundImage:
-                                        NetworkImage(ebook['image']),
+                                    backgroundImage: NetworkImage(ebook.image),
                                   )
                                 : CircleAvatar(
                                     radius: 20,
                                     child: Text(
-                                      ebook['name'][0],
+                                      ebook.name[0],
                                       style: const TextStyle(fontSize: 18),
                                     ),
                                   ),
                             const SizedBox(width: 8.0),
                             Expanded(
                               child: Text(
-                                ebook['name'],
+                                ebook.name,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -174,15 +172,13 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 4.0),
                               decoration: BoxDecoration(
-                                color: ebook['status'] == 'Active'
+                                color: ebook.status == 'Active'
                                     ? Colors.green
                                     : Colors.red,
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                ebook['status'] == 'Active'
-                                    ? 'Active'
-                                    : 'Expired',
+                                ebook.status == 'Active' ? 'Active' : 'Expired',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -190,54 +186,49 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                             const Spacer(),
-                            if (ebook['button'] != null &&
-                                ebook['button']['status'] == true)
+                            if (ebook.button != null && ebook.button!.status)
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _getButtonColor(
-                                      ebook['button']
-                                          ['value']), // Conditional color
+                                      ebook.button!.value), // Conditional color
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12.0, vertical: 8.0),
                                 ),
                                 onPressed: () {
-                                  ebook['button']['value'] == 'Read E-Book'
+                                  ebook.button!.value == 'Read E-Book'
                                       ? Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                EbookDetailPage(
-                                              ebook: ebook,
+                                            builder: (context) => EbookDetailPage(
+                                              ebook: ebook.toJson(),
                                             ),
                                             settings: RouteSettings(
-                                                name:
-                                                    '/my-ebooks/${ebook['id']}'),
+                                                name: '/my-ebooks/${ebook.id}'),
                                           ),
                                         )
-                                      : _launchURL(ebook['button']['link']);
+                                      : _launchURL(ebook.button!.link);
                                 },
                                 child: Text(
-                                  ebook['button']['value'] == 'Renew Softcopy'
+                                  ebook.button!.value == 'Renew Softcopy'
                                       ? 'Renew'
-                                      : ebook['button']['value'] ==
-                                              'Read E-Book'
+                                      : ebook.button!.value == 'Read E-Book'
                                           ? 'Read'
-                                          : ebook['button']['value'] ?? 'Link',
+                                          : ebook.button!.value ?? 'Link',
                                 ),
                               ),
                           ],
                         ),
                         const SizedBox(height: 8.0),
                         Text(
-                          'Duration: ${ebook['duration']}',
+                          'Duration: ${ebook.validity}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.black54,
                           ),
                         ),
                         Text(
-                          'Ending: ${ebook['ending']}',
+                          'Ending: ${ebook.ending}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.black54,
