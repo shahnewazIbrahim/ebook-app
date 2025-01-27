@@ -56,7 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       var headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer 24481|pHCYJ0aZvP04Js9SM076EzrGsUmqdTpZnFRcOvWE",
+        "Authorization":
+            "Bearer 24481|pHCYJ0aZvP04Js9SM076EzrGsUmqdTpZnFRcOvWE",
       };
 
       final response = await http.get(
@@ -73,7 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       } else {
         // Handle error responses
-        print("Failed to fetch ebooks: ${response.statusCode}, ${response.body}");
+        print(
+            "Failed to fetch ebooks: ${response.statusCode}, ${response.body}");
       }
     } catch (error) {
       // Handle any exceptions
@@ -95,14 +97,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Color _getButtonColor(String? buttonValue) {
-    if (buttonValue == 'Read E-Book') {
-      return Colors.blue; // Blue for 'Read E-Book'
-    } else if (buttonValue == 'Renew Softcopy') {
-      return Colors.red; // Red for 'Renew Softcopy'
-    } else if (buttonValue == 'Continue') {
-      return Colors.yellow; // Yellow for 'Continue'
-    } else {
-      return Colors.grey; // Default color if no match
+    switch (buttonValue) {
+      case 'Read E-Book':
+        return Colors.blue; // Blue for 'Read E-Book'
+      case 'Renew Softcopy':
+        return Colors.red; // Red for 'Renew Softcopy'
+      case 'Continue':
+        return Colors.yellow; // Yellow for 'Continue'
+      default:
+        return Colors.grey; // Default color if no match
     }
   }
 
@@ -200,7 +203,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ? Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => EbookDetailPage(
+                                            builder: (context) =>
+                                                EbookDetailPage(
                                               ebook: ebook.toJson(),
                                             ),
                                             settings: RouteSettings(
