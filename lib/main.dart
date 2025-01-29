@@ -117,6 +117,46 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: Text(
+                'My Ebooks',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: const Text('Home'),
+              onTap: () {
+                // Navigate to the home page
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Settings'),
+              onTap: () {
+                // Navigate to the settings page
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('User'),
+              onTap: () {
+                // Navigate to the user page
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : GridView.builder(
@@ -245,6 +285,39 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
+      bottomNavigationBar: Theme.of(context).useMaterial3
+          ? NavigationBar(
+              selectedIndex: 0,
+              onDestinationSelected: (int index) {
+                // Handle navigation based on the selected index
+                switch (index) {
+                  case 0:
+                    // Navigate to the home page
+                    break;
+                  case 1:
+                    // Navigate to the ebooks page
+                    break;
+                  case 2:
+                    // Navigate to the settings page
+                    break;
+                }
+              },
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.book),
+                  label: 'Ebooks',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person),
+                  label: 'User',
+                ),
+              ],
+            )
+          : null,
     );
   }
 }
