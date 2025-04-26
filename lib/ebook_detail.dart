@@ -1,10 +1,13 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class EbookDetailPage extends StatefulWidget {
   final String ebookId;
 
-  const EbookDetailPage({Key? key, required this.ebookId, required Map<String, dynamic> ebook}) : super(key: key);
+  const EbookDetailPage(
+      {Key? key, required this.ebookId, required Map<String, dynamic> ebook})
+      : super(key: key);
 
   @override
   _EbookDetailPageState createState() => _EbookDetailPageState();
@@ -62,12 +65,64 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                             .headlineMedium, // Updated text style
                       ),
                       const SizedBox(height: 16),
+                      ebookDetail['image'] == null || ebookDetail['image'] == ""
+                          ? Container(
+                              width: double.infinity,
+                              height: 200,
+                              color: Colors.grey[200],
+                              child: Center(
+                                child: Icon(
+                                  Icons.book,
+                                  color: Colors.grey,
+                                  size: 80,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: double.infinity,
+                              height: 200,
+                              child: Image.network(
+                                ebookDetail['image'],
+                                fit: BoxFit.cover,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                (loadingProgress
+                                                        .expectedTotalBytes ??
+                                                    1)
+                                            : null,
+                                      ),
+                                    );
+                                  }
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Icon(
+                                      Icons.error,
+                                      color: Colors.red,
+                                      size: 80,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                       Text(
                         'Book: ${ebookDetail['title'] ?? 'N/A'}',
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium, // Updated text style
                       ),
+                      Text(ebookDetail['image']),
                       Text('Author: ${ebookDetail['author'] ?? 'N/A'}'),
                       Text('Publisher: ${ebookDetail['publisher'] ?? 'N/A'}'),
                       Text('ISBN: ${ebookDetail['isbn'] ?? 'N/A'}'),
@@ -101,9 +156,8 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                       ? SingleChildScrollView(
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                                ebookDetail['features'] ??
-                                                    'No features available'),
+                                            child: Html(
+                                                data: ebookDetail['features']),
                                           ),
                                         )
                                       : Center(
@@ -114,9 +168,9 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                       ? SingleChildScrollView(
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: Text(ebookDetail[
-                                                    'instructions'] ??
-                                                'No instructions available'),
+                                            child: Html(
+                                                data: ebookDetail[
+                                                    'instructions']),
                                           ),
                                         )
                                       : Center(
