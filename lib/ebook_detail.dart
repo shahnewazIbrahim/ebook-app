@@ -78,7 +78,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                 ),
                               ),
                             )
-                          : Container(
+                          : SizedBox(
                               width: double.infinity,
                               height: 200,
                               child: Image.network(
