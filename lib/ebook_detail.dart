@@ -1,21 +1,20 @@
-import 'dart:convert'; // For JSON decoding
-
-import 'package:ebook_project/api/routes.dart';
+import 'package:ebook_project/api/api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class EbookDetailPage extends StatefulWidget {
-  final Map<String, dynamic> ebook;
+  final String ebookId;
 
-  const EbookDetailPage({required this.ebook, Key? key}) : super(key: key);
+  const EbookDetailPage({Key? key, required this.ebookId, required Map<String, dynamic> ebook}) : super(key: key);
 
   @override
   _EbookDetailPageState createState() => _EbookDetailPageState();
 }
 
 class _EbookDetailPageState extends State<EbookDetailPage> {
-  Map<String, dynamic> ebookDetail = {}; // Initialize as an empty map
+  Map<String, dynamic> ebookDetail = {};
   bool isLoading = true;
+  bool isError = false;
+  String selectedTab = 'features'; // Tab selection
 
   @override
   void initState() {
@@ -24,39 +23,19 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   }
 
   Future<void> fetchEbookDetails() async {
+    ApiService apiService = ApiService();
     try {
-      var headers = {
-        "Content-Type": "application/json",
-        "Authorization":
-            "Bearer 24481|pHCYJ0aZvP04Js9SM076EzrGsUmqdTpZnFRcOvWE",
-      };
-
-      var apiUrl = getFullUrl("/v1/ebooks/${widget.ebook['id']}");
-
-      final response = await http.get(
-        apiUrl,
-        headers: headers,
-      );
-
-      if (response.statusCode == 200) {
-        // Success - Parse the JSON response
-        final data = json.decode(response.body);
-        setState(() {
-          ebookDetail = data['eBook']; // Assign the data to ebookDetail
-          isLoading = false;
-        });
-      } else {
-        print(
-            "Failed to fetch ebooks: ${response.statusCode}, ${response.body}");
-        setState(() {
-          isLoading = false;
-        });
-      }
+      final data =
+          await apiService.fetchEbookData("/v1/ebooks/${widget.ebookId}");
+      setState(() {
+        ebookDetail = data['eBook'];
+        isLoading = false;
+      });
     } catch (error) {
-      print("Error fetching ebooks: $error");
       setState(() {
         isLoading = false;
       });
+      print("Error fetching ebook details: $error");
     }
   }
 
@@ -64,64 +43,104 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.ebook['name']),
+        title: Text('Ebook Details'),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: widget.ebook['image'] != null &&
-                            widget.ebook['image'].isNotEmpty
-                        ? Image.network(
-                            widget.ebook['image'],
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.image_not_supported,
-                                  size: 100);
-                            },
-                          )
-                        : const Icon(Icons.image, size: 100),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Welcome to Banglamed E-Book",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
+          ? Center(child: CircularProgressIndicator())
+          : isError
+              ? Center(child: Text('Failed to load ebook details'))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      // Ebook Title and Details
+                      Text(
+                        'Welcome to Banglamed E-Book',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium, // Updated text style
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Book: ${ebookDetail['title'] ?? 'N/A'}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium, // Updated text style
+                      ),
+                      Text('Author: ${ebookDetail['author'] ?? 'N/A'}'),
+                      Text('Publisher: ${ebookDetail['publisher'] ?? 'N/A'}'),
+                      Text('ISBN: ${ebookDetail['isbn'] ?? 'N/A'}'),
+                      Text('Edition: ${ebookDetail['edition'] ?? 'N/A'}'),
+                      Text('Suitable for: ${ebookDetail['suitable'] ?? 'N/A'}'),
+
+                      // Features and Instructions Tabs
+                      DefaultTabController(
+                        length: 2,
+                        child: Column(
+                          children: [
+                            TabBar(
+                              onTap: (index) {
+                                setState(() {
+                                  selectedTab =
+                                      index == 0 ? 'features' : 'instructions';
+                                });
+                              },
+                              tabs: [
+                                Tab(text: 'Features'),
+                                Tab(text: 'Instructions'),
+                              ],
+                            ),
+                            Container(
+                              height: 300,
+                              child: TabBarView(
+                                children: [
+                                  // Features Tab
+                                  ebookDetail['features'] != null &&
+                                          ebookDetail['features'].isNotEmpty
+                                      ? SingleChildScrollView(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                                ebookDetail['features'] ??
+                                                    'No features available'),
+                                          ),
+                                        )
+                                      : Center(
+                                          child: Text('No features available')),
+                                  // Instructions Tab
+                                  ebookDetail['instructions'] != null &&
+                                          ebookDetail['instructions'].isNotEmpty
+                                      ? SingleChildScrollView(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(ebookDetail[
+                                                    'instructions'] ??
+                                                'No instructions available'),
+                                          ),
+                                        )
+                                      : Center(
+                                          child: Text(
+                                              'No instructions available')),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16.0),
-                        Text("Book: ${ebookDetail['title'] ?? 'N/A'}"),
-                        Text("Author: ${ebookDetail['author'] ?? 'N/A'}"),
-                        Text("Publisher: ${ebookDetail['publisher'] ?? 'N/A'}"),
-                        Text("ISBN: ${ebookDetail['isbn'] ?? 'N/A'}"),
-                        Text("Edition: ${ebookDetail['edition'] ?? 'N/A'}"),
-                        Text(
-                            "Suitable for: ${ebookDetail['suitable_for'] ?? 'N/A'}"),
-                        const Spacer(),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            // Define your logic here (e.g., open subjects or continue reading)
-                          },
-                          icon: const Icon(Icons.menu_book),
-                          label: const Text("Go to Subjects"),
-                        ),
-                      ],
-                    ),
+                      ),
+
+                      // Button to go to subjects
+                      ElevatedButton(
+                        onPressed: () {
+                          // Navigate to subjects (You need to implement the Subjects screen)
+                          Navigator.pushNamed(context, '/subjects',
+                              arguments: ebookDetail['id']);
+                        },
+                        child: Text('Go to Subjects'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
     );
   }
 }
