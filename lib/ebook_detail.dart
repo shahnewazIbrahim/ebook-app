@@ -65,6 +65,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                             .headlineMedium, // Updated text style
                       ),
                       const SizedBox(height: 16),
+
                       ebookDetail['image'] == null || ebookDetail['image'] == ""
                           ? Container(
                               width: double.infinity,
@@ -115,6 +116,10 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                   );
                                 },
                               ),
+                              // child: Image(
+                              //   image: AssetImage('assets/productDemo.jpg'),
+
+                              // )
                             ),
                       Text(
                         'Book: ${ebookDetail['title'] ?? 'N/A'}',
@@ -122,7 +127,6 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                             .textTheme
                             .titleMedium, // Updated text style
                       ),
-                      Text(ebookDetail['image']),
                       Text('Author: ${ebookDetail['author'] ?? 'N/A'}'),
                       Text('Publisher: ${ebookDetail['publisher'] ?? 'N/A'}'),
                       Text('ISBN: ${ebookDetail['isbn'] ?? 'N/A'}'),
