@@ -81,15 +81,23 @@ class EbookCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
                   decoration: BoxDecoration(
-                    color: ebook.status == 'Active' ? Colors.green : Colors.red,
+                    color: ebook.isExpired
+                        ? Colors.red
+                          : ebook.status == 1
+                            ? Colors.green
+                              : Colors.orange,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Text(
-                    ebook.status == 'Active' ? 'Active' : 'Expired',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
+                      ebook.isExpired
+                          ? 'Expired'
+                            : ebook.status == 1
+                              ? 'Active'
+                                : 'Pending',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
                   ),
                 ),
                 const Spacer(),

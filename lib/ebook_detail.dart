@@ -117,10 +117,10 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                               )
                             : SizedBox(
                                 width: double.infinity,
-                                height: 200,
+                                height: 400,
                                 child: Image.network(
                                   ebookDetail['image'],
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   loadingBuilder: (BuildContext context,
                                       Widget child,
                                       ImageChunkEvent? loadingProgress) {
@@ -235,7 +235,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
 
   Widget _buildRow(dynamic label, dynamic value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
