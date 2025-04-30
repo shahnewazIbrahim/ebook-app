@@ -252,7 +252,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                             children: [
                               Icon(
                                 FontAwesomeIcons.solidHandPointRight,  // This is a hand icon from font-awesome
-                                color: Colors.grey,
+                                color: Colors.white,
                                 size: 30,
                               ),
                               SizedBox(width: 8),
@@ -260,6 +260,70 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                             ],
                           ),
                         ),
+
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // Navigate to subjects
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => EbookSubjectsPage(
+                        //           ebook: ebookDetail,
+                        //           ebookId: ebookDetail['id'].toString(), // Pass the required ebookId as a String
+                        //         ),
+                        //       ),
+                        //     );
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     // No background color, we'll use gradient
+                        //     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // Padding
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(8), // Rounded corners
+                        //     ),
+                        //   ).copyWith(
+                        //     // Handle hover and pressed state colors
+                        //     backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                        //       if (states.contains(MaterialState.pressed)) {
+                        //         return Color(0xFF0c4a6e).withOpacity(0.5); // 50% opacity when pressed
+                        //       } else if (states.contains(MaterialState.hovered)) {
+                        //         return Color(0xFF0c4a6e).withOpacity(0.8); // 20% opacity when hovered
+                        //       }
+                        //       return Color(0xFF0c4a6e); // Default color
+                        //     }),
+                        //   ),
+                        //   child: Ink(
+                        //     decoration: BoxDecoration(
+                        //       // Apply Gradient to the button
+                        //       gradient: LinearGradient(
+                        //         colors: [Color(0xFF0c4a6e), Color(0xFF2196F3)], // from-sky-900 to-sky-500
+                        //         begin: Alignment.topLeft,
+                        //         end: Alignment.bottomRight,
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(8), // Rounded corners
+                        //     ),
+                        //     child: Container(
+                        //       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        //       child: Row(
+                        //         crossAxisAlignment: CrossAxisAlignment.center,
+                        //         mainAxisAlignment: MainAxisAlignment.center,
+                        //         children: [
+                        //           Icon(
+                        //             FontAwesomeIcons.solidHandPointRight, // Hand icon from font-awesome
+                        //             color: Colors.white, // Icon color
+                        //             size: 30,
+                        //           ),
+                        //           SizedBox(width: 8),
+                        //           Text(
+                        //             'Go to Subjects',
+                        //             style: TextStyle(color: Colors.white), // Text color
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // )
+
+
                       ],
                     ),
                   )),
