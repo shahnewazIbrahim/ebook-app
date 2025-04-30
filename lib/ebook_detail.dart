@@ -1,4 +1,6 @@
 import 'package:ebook_project/api/api_service.dart';
+import 'package:ebook_project/ebook_subjects.dart';
+import 'package:ebook_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -222,10 +224,28 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                         ElevatedButton(
                           onPressed: () {
                             // Navigate to subjects (You need to implement the Subjects screen)
-                            Navigator.pushNamed(context, '/subjects',
-                                arguments: ebookDetail['id']);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EbookSubjectsPage(
+                                  ebook: ebookDetail,
+                                  ebookId: ebookDetail['id']
+                                      .toString(), // Pass the required ebookId as a String
+                                ),
+                              ),
+                            );
                           },
-                          child: Text('Go to Subjects'),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.arrow_right,
+                                color: Colors.grey,
+                                size: 50,
+                              ),
+                              Text('Go to Subjects'),
+                            ],
+                          )
                         ),
                       ],
                     ),

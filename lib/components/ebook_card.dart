@@ -134,19 +134,47 @@ class EbookCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8.0),
-            Text(
-              'Duration: ${ebook.validity}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Duration:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 3),
+                Expanded(
+                  child: Text(
+                    ebook.validity ?? 'N/A',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Text(
-              'Ending: ${ebook.ending}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Ending:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 3),
+                Expanded(
+                  child: Text(
+                    ebook.ending ?? 'N/A',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
