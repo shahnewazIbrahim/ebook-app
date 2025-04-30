@@ -3,6 +3,7 @@ import 'package:ebook_project/ebook_subjects.dart';
 import 'package:ebook_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EbookDetailPage extends StatefulWidget {
   final String ebookId;
@@ -172,7 +173,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                 ],
                               ),
                               SizedBox(
-                                height: 300,
+                                height: 250,
                                 child: TabBarView(
                                   children: [
                                     // Features Tab
@@ -228,17 +229,27 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                               ),
                             );
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF0c4a6e), // Normal color #0c4a6e
+                            disabledForegroundColor: Colors.white, disabledBackgroundColor: Colors.white, // Color when the button is pressed or hovered
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // Optional padding adjustment
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8), // Rounded corners
+                            ),
+                          ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.arrow_right,
+                                FontAwesomeIcons.solidHandPointRight,  // This is a hand icon from font-awesome
                                 color: Colors.grey,
-                                size: 50,
+                                size: 30,
                               ),
-                              Text('Go to Subjects'),
+                              SizedBox(width: 8),
+                              Text('Go to Subjects', style: TextStyle(color: Colors.white),),
                             ],
-                          )
+                          ),
                         ),
                       ],
                     ),
