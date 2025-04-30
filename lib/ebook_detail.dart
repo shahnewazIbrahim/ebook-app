@@ -231,11 +231,20 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF0c4a6e), // Normal color #0c4a6e
-                            disabledForegroundColor: Colors.white, disabledBackgroundColor: Colors.white, // Color when the button is pressed or hovered
                             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // Optional padding adjustment
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8), // Rounded corners
                             ),
+                          ).copyWith(
+                            // Handle hover and pressed state colors
+                            backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return Color(0xFF0c4a6e).withOpacity(0.5); // 50% opacity when pressed
+                              } else if (states.contains(MaterialState.hovered)) {
+                                return Color(0xFF0c4a6e).withOpacity(0.8); // 20% opacity when hovered
+                              }
+                              return Color(0xFF0c4a6e); // Default color
+                            }),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
