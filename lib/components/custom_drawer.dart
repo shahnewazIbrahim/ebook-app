@@ -7,12 +7,12 @@ class CustomDrawer extends StatelessWidget {
   final Function onUserTap;
 
   const CustomDrawer({
-    Key? key,
+    super.key,
     required this.title,
     required this.onHomeTap,
     required this.onSettingsTap,
     required this.onUserTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

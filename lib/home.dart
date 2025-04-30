@@ -8,10 +8,10 @@ class HomeComponent extends StatelessWidget {
   final bool isLoading;
 
   const HomeComponent({
-    Key? key,
+    super.key,
     required this.ebooks,
     required this.isLoading,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

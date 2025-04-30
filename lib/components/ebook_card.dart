@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 class EbookCard extends StatelessWidget {
   final Ebook ebook;
 
-  const EbookCard({required this.ebook, Key? key}) : super(key: key);
+  const EbookCard({required this.ebook, super.key});
 
   // Function to open the URL in the browser
   Future<void> _launchURL(String url) async {
