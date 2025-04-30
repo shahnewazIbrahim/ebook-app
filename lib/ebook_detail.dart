@@ -83,17 +83,10 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                 mainAxisSize: MainAxisSize
                                     .min, // Ensures the column only takes the space needed
                                 crossAxisAlignment: CrossAxisAlignment
-                                    .start, // Align children to the left
-                                children: [
-                                  _buildRow('Books:', ebookDetail['title']),
-                                  _buildRow('Author:', ebookDetail['author']),
-                                  _buildRow(
-                                      'Publisher:', ebookDetail['publisher']),
-                                  _buildRow('ISBN:', ebookDetail['isbn']),
-                                  _buildRow('Edition:', ebookDetail['edition']),
-                                  _buildRow(
-                                      'Suitable for:', ebookDetail['suitable']),
-                                ],
+                                    .start,
+                                children: ebookDetail['specifications'].map<Widget>((spec) {
+                                  return _buildRow(spec['title'], spec['value']);
+                                }).toList(),
                               ),
                             ),
                           ),
