@@ -4,6 +4,7 @@ import 'package:ebook_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ebook_project/components/custom_drawer.dart';
 
 class EbookDetailPage extends StatefulWidget {
   final String ebookId;
@@ -48,7 +49,23 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Ebook Details'),
+      ),
+      drawer: CustomDrawer(
+        title: 'My Ebooks',
+        onHomeTap: () {
+          // Handle navigation to the home page
+          Navigator.pushNamed(context, '/home');
+        },
+        onSettingsTap: () {
+          // Handle navigation to the settings page
+          Navigator.pushNamed(context, '/settings');
+        },
+        onUserTap: () {
+          // Handle navigation to the user page
+          Navigator.pushNamed(context, '/user');
+        },
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
