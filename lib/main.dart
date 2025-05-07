@@ -103,15 +103,14 @@ class _MyHomePageState extends State<MyHomePage> {
           //       return EbookCard(ebook: ebooks[index]);
           //     },
           //   ),
-         : ListView.builder(
-            itemCount: ebooks.length,
-            padding: const EdgeInsets.all(8.0),
-            itemBuilder: (context, index) {
-              return EbookCard(ebook: ebooks[index]);
-            },
-          ),
-
-        bottomNavigationBar: Theme.of(context).useMaterial3
+          : ListView.builder(
+              itemCount: ebooks.length,
+              padding: const EdgeInsets.all(8.0),
+              itemBuilder: (context, index) {
+                return EbookCard(ebook: ebooks[index]);
+              },
+            ),
+      bottomNavigationBar: Theme.of(context).useMaterial3
           ? NavigationBar(
               selectedIndex: 0,
               onDestinationSelected: (int index) {
