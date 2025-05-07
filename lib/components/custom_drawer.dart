@@ -2,24 +2,23 @@ import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatelessWidget {
   final String title;
-  final Function onHomeTap;
-  final Function onSettingsTap;
-  final Function onUserTap;
+  final VoidCallback onHomeTap;
+  final VoidCallback onSettingsTap;
+  final VoidCallback onUserTap;
 
   const CustomDrawer({
-    super.key,
+    Key? key,
     required this.title,
     required this.onHomeTap,
     required this.onSettingsTap,
     required this.onUserTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
+        children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
@@ -33,25 +32,16 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: const Text('Home'),
-            onTap: () {
-              onHomeTap();
-              Navigator.pop(context); // Close the drawer
-            },
+            title: Text('Home'),
+            onTap: onHomeTap,
           ),
           ListTile(
-            title: const Text('Settings'),
-            onTap: () {
-              onSettingsTap();
-              Navigator.pop(context); // Close the drawer
-            },
+            title: Text('Settings'),
+            onTap: onSettingsTap,
           ),
           ListTile(
-            title: const Text('User'),
-            onTap: () {
-              onUserTap();
-              Navigator.pop(context); // Close the drawer
-            },
+            title: Text('User'),
+            onTap: onUserTap,
           ),
         ],
       ),

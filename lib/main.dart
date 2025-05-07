@@ -21,7 +21,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0EA5E9)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'My Ebooks'),
+      // home: const MyHomePage(title: 'My Ebooks'),
+      initialRoute: '/', // Define the initial route
+      routes: {
+        '/': (context) => MyHomePage(title: 'My Ebooks'), // Home page route
+        '/home': (context) =>
+            MyHomePage(title: 'My Ebooks'), // Define your home route here
+        // '/settings': (context) => SettingsPage(), // Settings route
+        // '/user': (context) => UserPage(), // User route
+      },
     );
   }
 }
