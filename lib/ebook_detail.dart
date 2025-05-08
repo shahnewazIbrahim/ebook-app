@@ -1,5 +1,5 @@
 import 'package:ebook_project/api/api_service.dart';
-import 'package:ebook_project/components/custom_app_bar.dart';
+import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/ebook_subjects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -47,7 +47,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
+    return AppLayout(
       // title: "Ebook Details",
       title: "${widget.ebook['name']} Details",
       body: isLoading

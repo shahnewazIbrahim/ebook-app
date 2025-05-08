@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'custom_drawer.dart'; // Assuming you have a custom drawer widget
 
-class CustomAppBar extends StatelessWidget {
+class AppLayout extends StatelessWidget {
   final String title;
   final Widget body;
 
-  const CustomAppBar({Key? key, required this.title, required this.body})
+  const AppLayout({Key? key, required this.title, required this.body})
       : super(key: key);
 
   @override

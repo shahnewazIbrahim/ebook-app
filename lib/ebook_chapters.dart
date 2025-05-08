@@ -1,5 +1,5 @@
 import 'package:ebook_project/api/api_service.dart';
-import 'package:ebook_project/components/custom_app_bar.dart';
+import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/ebook_topics.dart';
 import 'package:ebook_project/models/ebook_chapter.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +53,7 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
+    return AppLayout(
       // title: 'Ebook Chapters',
       title: '${widget.ebookName} Chapters',
       body: Padding(

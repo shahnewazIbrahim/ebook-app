@@ -1,6 +1,6 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/api/routes.dart';
-import 'package:ebook_project/components/custom_app_bar.dart';
+import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/components/ebook_card.dart';
 import 'package:ebook_project/models/ebook.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
+    return AppLayout(
       title: 'My Ebooks',
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
