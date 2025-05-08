@@ -8,12 +8,14 @@ class EbookTopicsPage extends StatefulWidget {
   final String ebookId;
   final String subjectId;
   final String chapterId;
+  final String ebookName;
 
   const EbookTopicsPage(
       {super.key,
       required this.ebookId,
       required this.subjectId,
-      required this.chapterId});
+      required this.chapterId,
+      required this.ebookName});
 
   @override
   _EbookTopicsState createState() => _EbookTopicsState();
@@ -53,7 +55,8 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
-      title: 'Ebook Topics',
+      // title: 'Ebook Topics',
+      title: '${widget.ebookName} Topics',
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: isLoading

@@ -7,10 +7,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EbookSubjectsPage extends StatefulWidget {
   final String ebookId;
+  final String ebookName;
 
   const EbookSubjectsPage(
       {super.key,
-      required this.ebookId}); // Pass the subjectId to the constructor
+      required this.ebookId,
+      required this.ebookName}); // Pass the subjectId to the constructor
 
   @override
   _EbookSubjectsState createState() => _EbookSubjectsState();
@@ -50,7 +52,8 @@ class _EbookSubjectsState extends State<EbookSubjectsPage> {
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
-      title: 'Ebook Subjects',
+      // title: 'Ebook Subjects',
+      title: '${widget.ebookName} Subjects',
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView.builder(
@@ -71,6 +74,7 @@ class _EbookSubjectsState extends State<EbookSubjectsPage> {
                         subjectId: ebookSubjects[index]
                             .id
                             .toString(), // Pass the required subjectId as a String
+                        ebookName: widget.ebookName.toString(),
                       ),
                     ),
                   );

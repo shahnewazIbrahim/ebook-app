@@ -7,9 +7,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EbookDetailPage extends StatefulWidget {
   final String ebookId;
+  final Map<String, dynamic> ebook; // Pass the ebook data as a parameter
 
   const EbookDetailPage(
-      {super.key, required this.ebookId, required Map<String, dynamic> ebook});
+      {super.key, required this.ebookId, required this.ebook});
 
   @override
   _EbookDetailPageState createState() => _EbookDetailPageState();
@@ -47,7 +48,8 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
-      title: 'Ebook Details',
+      // title: "Ebook Details",
+      title: "${widget.ebook['name']} Details",
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : isError
@@ -103,8 +105,8 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => EbookSubjectsPage(
-                                  ebookId: ebookDetail['id']
-                                      .toString(), // Pass the required ebookId as a String
+                                  ebookId: ebookDetail['id'].toString(),
+                                  ebookName: widget.ebook['name'].toString(),
                                 ),
                               ),
                             );

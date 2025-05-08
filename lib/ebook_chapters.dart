@@ -1,6 +1,5 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/custom_app_bar.dart';
-import 'package:ebook_project/components/custom_drawer.dart';
 import 'package:ebook_project/ebook_topics.dart';
 import 'package:ebook_project/models/ebook_chapter.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +8,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class EbookChaptersPage extends StatefulWidget {
   final String ebookId;
   final String subjectId;
+  final String ebookName;
 
   const EbookChaptersPage(
-      {super.key, required this.ebookId, required this.subjectId});
+      {super.key,
+      required this.ebookId,
+      required this.subjectId,
+      required this.ebookName});
 
   @override
   _EbookChaptersState createState() => _EbookChaptersState();
@@ -51,7 +54,8 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
-      title: 'Ebook Chapters',
+      // title: 'Ebook Chapters',
+      title: '${widget.ebookName} Chapters',
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: isLoading
@@ -70,6 +74,7 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
                               ebookId: widget.ebookId,
                               subjectId: widget.subjectId,
                               chapterId: ebookChapters[index].id.toString(),
+                              ebookName: widget.ebookName.toString(),
                             ),
                           ),
                         );

@@ -14,7 +14,16 @@ class CustomAppBar extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
+        title: Text(
+          title,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+        ),
+        titleTextStyle: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
       ),
       endDrawer: CustomDrawer(
         title: 'My Ebooks',
