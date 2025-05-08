@@ -50,6 +50,14 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Ebook Details'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Go back to the previous screen
+            },
+          ),
+        ],
       ),
       drawer: CustomDrawer(
         title: 'My Ebooks',
@@ -114,6 +122,69 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                           height: 16,
                         ),
 
+                        ElevatedButton(
+                          onPressed: () {
+                            // Navigate to subjects (You need to implement the Subjects screen)
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EbookSubjectsPage(
+                                  ebookId: ebookDetail['id']
+                                      .toString(), // Pass the required ebookId as a String
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Color(0xFF0c4a6e), // Normal color #0c4a6e
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 12), // Optional padding adjustment
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(8), // Rounded corners
+                            ),
+                          ).copyWith(
+                            // Handle hover and pressed state colors
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return Color.fromARGB(255, 8, 140, 216)
+                                    .withOpacity(
+                                        0.5); // 50% opacity when pressed
+                              } else if (states
+                                  .contains(MaterialState.hovered)) {
+                                return Color.fromARGB(255, 8, 140, 216)
+                                    .withOpacity(
+                                        0.8); // 20% opacity when hovered
+                              }
+                              return Color.fromARGB(
+                                  255, 12, 128, 196); // Default color
+                            }),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                FontAwesomeIcons
+                                    .solidHandPointRight, // This is a hand icon from font-awesome
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Go to Subjects',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: 16),
+                        // Features and Instructions Tabs
                         ebookDetail['image'] == null ||
                                 ebookDetail['image'] == ""
                             ? Container(
@@ -171,7 +242,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                 // )
                               ),
 
-                        // Features and Instructions Tabs
+                        // Button to go to subjects
                         DefaultTabController(
                           length: 2,
                           child: Column(
@@ -226,69 +297,6 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                                 'No instructions available')),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Button to go to subjects
-                        ElevatedButton(
-                          onPressed: () {
-                            // Navigate to subjects (You need to implement the Subjects screen)
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EbookSubjectsPage(
-                                  ebook: ebookDetail,
-                                  ebookId: ebookDetail['id']
-                                      .toString(), // Pass the required ebookId as a String
-                                ),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Color(0xFF0c4a6e), // Normal color #0c4a6e
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 12), // Optional padding adjustment
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(8), // Rounded corners
-                            ),
-                          ).copyWith(
-                            // Handle hover and pressed state colors
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
-                              if (states.contains(MaterialState.pressed)) {
-                                return Color.fromARGB(255, 8, 140, 216)
-                                    .withOpacity(
-                                        0.5); // 50% opacity when pressed
-                              } else if (states
-                                  .contains(MaterialState.hovered)) {
-                                return Color.fromARGB(255, 8, 140, 216)
-                                    .withOpacity(
-                                        0.8); // 20% opacity when hovered
-                              }
-                              return Color.fromARGB(
-                                  255, 12, 128, 196); // Default color
-                            }),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                FontAwesomeIcons
-                                    .solidHandPointRight, // This is a hand icon from font-awesome
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Go to Subjects',
-                                style: TextStyle(color: Colors.white),
                               ),
                             ],
                           ),

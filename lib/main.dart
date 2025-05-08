@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My Ebooks',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0EA5E9)),
         useMaterial3: true,
@@ -25,10 +26,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/', // Define the initial route
       routes: {
         '/': (context) => MyHomePage(title: 'My Ebooks'), // Home page route
-        '/home': (context) =>
-            MyHomePage(title: 'My Ebooks'), // Define your home route here
-        // '/settings': (context) => SettingsPage(), // Settings route
-        // '/user': (context) => UserPage(), // User route
+        '/home': (context) => MyHomePage(title: 'My Ebooks'),
       },
     );
   }
