@@ -2,6 +2,7 @@ import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/api/routes.dart';
 import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/components/ebook_card.dart';
+import 'package:ebook_project/login.dart';
 import 'package:ebook_project/models/ebook.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => MyHomePage(title: 'My Ebooks'), // Home page route
         '/home': (context) => MyHomePage(title: 'My Ebooks'),
+        '/login': (context) => LoginPage(),
       },
     );
   }
