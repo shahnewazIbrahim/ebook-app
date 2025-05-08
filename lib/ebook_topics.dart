@@ -56,16 +56,14 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Ebook Topics'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context); // Go back to the previous screen
-            },
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+        ),
       ),
-      drawer: CustomDrawer(
+      endDrawer: CustomDrawer(
         title: 'My Ebooks',
         onHomeTap: () {
           Navigator.pushNamed(context, '/home');

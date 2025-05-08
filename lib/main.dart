@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      drawer: CustomDrawer(
+      endDrawer: CustomDrawer(
         title: 'My Ebooks',
         onHomeTap: () {
           // Handle navigation to the home page

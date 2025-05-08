@@ -50,16 +50,14 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Ebook Details'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context); // Go back to the previous screen
-            },
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+        ),
       ),
-      drawer: CustomDrawer(
+      endDrawer: CustomDrawer(
         title: 'My Ebooks',
         onHomeTap: () {
           // Handle navigation to the home page
