@@ -1,6 +1,6 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/api/routes.dart';
-import 'package:ebook_project/components/custom_drawer.dart';
+import 'package:ebook_project/components/custom_app_bar.dart';
 import 'package:ebook_project/components/ebook_card.dart';
 import 'package:ebook_project/models/ebook.dart';
 import 'package:flutter/material.dart';
@@ -74,26 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      endDrawer: CustomDrawer(
-        title: 'My Ebooks',
-        onHomeTap: () {
-          // Handle navigation to the home page
-          Navigator.pushNamed(context, '/home');
-        },
-        onSettingsTap: () {
-          // Handle navigation to the settings page
-          Navigator.pushNamed(context, '/settings');
-        },
-        onUserTap: () {
-          // Handle navigation to the user page
-          Navigator.pushNamed(context, '/user');
-        },
-      ),
+    return CustomAppBar(
+      title: 'My Ebooks',
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           // : GridView.builder(
@@ -119,39 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
             ),
-      bottomNavigationBar: Theme.of(context).useMaterial3
-          ? NavigationBar(
-              selectedIndex: 0,
-              onDestinationSelected: (int index) {
-                // Handle navigation based on the selected index
-                switch (index) {
-                  case 0:
-                    // Navigate to the home page
-                    break;
-                  case 1:
-                    // Navigate to the ebooks page
-                    break;
-                  case 2:
-                    // Navigate to the settings page
-                    break;
-                }
-              },
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.book),
-                  label: 'Ebooks',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person),
-                  label: 'User',
-                ),
-              ],
-            )
-          : null,
     );
   }
 }

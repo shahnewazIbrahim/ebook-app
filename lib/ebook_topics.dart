@@ -1,5 +1,5 @@
 import 'package:ebook_project/api/api_service.dart';
-import 'package:ebook_project/components/custom_drawer.dart';
+import 'package:ebook_project/components/custom_app_bar.dart';
 import 'package:ebook_project/models/ebook_topic.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -52,29 +52,8 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Ebook Topics'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
-          },
-        ),
-      ),
-      endDrawer: CustomDrawer(
-        title: 'My Ebooks',
-        onHomeTap: () {
-          Navigator.pushNamed(context, '/home');
-        },
-        onSettingsTap: () {
-          Navigator.pushNamed(context, '/settings');
-        },
-        onUserTap: () {
-          Navigator.pushNamed(context, '/user');
-        },
-      ),
+    return CustomAppBar(
+      title: 'Ebook Topics',
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: isLoading
