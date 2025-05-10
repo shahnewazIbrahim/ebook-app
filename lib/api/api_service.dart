@@ -23,4 +23,31 @@ class ApiService {
       throw Exception('Error fetching data: $error');
     }
   }
+
+  // Method to post data using POST
+  Future<Map<String, dynamic>> postData(String endpoint, Map<String, dynamic> data) async {
+    try {
+      var headers = {
+        "Content-Type": "application/json",
+        "Authorization": token,
+      };
+
+      // Convert data to JSON
+      String body = json.encode(data);
+
+      final response = await http.post(
+        getFullUrl(endpoint),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to post data');
+      }
+    } catch (error) {
+      throw Exception('Error posting data: $error');
+    }
+  }
 }

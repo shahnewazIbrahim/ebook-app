@@ -1,4 +1,6 @@
+import 'package:ebook_project/api/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,12 +13,36 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   // Validate input fields and handle login
-  void _login() {
+  void _login() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+    ApiService apiService = ApiService();
     if (_formKey.currentState!.validate()) {
-      // Simulate a login process (You can integrate an actual API here)
+      final loginData = await apiService.postData('/login', {
+        'username' : username,
+        'password' : password,
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Logging in...')),
       );
+      print(loginData['token']);
+      if(loginData['token'] != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        print(loginData['token']);
+        prefs.setString('auth_token', loginData['token']); // Save the token
+        print(prefs.getString('auth_token'));
+      }
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Problem...')),
+        );
+      }
+      // Navigator.pushReplacementNamed(context, '/home');
+
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Problem...')),
+          );
     }
   }
 
