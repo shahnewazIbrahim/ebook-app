@@ -67,7 +67,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                               .textTheme
                               .headlineMedium, // Updated text style
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
 
                         Center(
                           child: Padding(
@@ -95,7 +95,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                         ),
 
                         const SizedBox(
-                          height: 16,
+                          height: 8,
                         ),
 
                         ElevatedButton(
