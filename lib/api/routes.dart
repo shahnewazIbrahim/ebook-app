@@ -1,4 +1,5 @@
-const String _baseUrl = 'http://127.0.0.1:8000';
+// const String _baseUrl = 'http://192.168.33.11:8000';
+const String _baseUrl = 'https://banglamed.net';
 
 const String _prefix = '/api';
 

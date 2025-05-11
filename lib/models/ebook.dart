@@ -7,6 +7,8 @@ class Ebook {
   final String validity;
   final String ending;
   final Button? button;
+  final String statusText;
+  final bool isExpired;
 
   Ebook({
     required this.id,
@@ -17,6 +19,8 @@ class Ebook {
     required this.validity,
     required this.ending,
     this.button,
+    required this.statusText,
+    required this.isExpired,
   });
 
   factory Ebook.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,8 @@ class Ebook {
       validity: json['validity'],
       ending: json['ending'],
       button: json['button'] != null ? Button.fromJson(json['button']) : null,
+      statusText: json['statusText'] ?? '',
+      isExpired: json['isExpired'] ?? false,
     );
   }
 
@@ -42,6 +48,8 @@ class Ebook {
       'validity': validity,
       'ending': ending,
       'button': button?.toJson(),
+      'statusText': statusText,
+      'isExpired': isExpired,
     };
   }
 }

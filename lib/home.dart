@@ -8,10 +8,10 @@ class HomeComponent extends StatelessWidget {
   final bool isLoading;
 
   const HomeComponent({
-    Key? key,
+    super.key,
     required this.ebooks,
     required this.isLoading,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +104,7 @@ class HomeComponent extends StatelessWidget {
                                         MaterialPageRoute(
                                           builder: (context) => EbookDetailPage(
                                             ebook: ebook.toJson(),
+                                            ebookId: ebook.id.toString(), // Pass the required ebookId as a String
                                           ),
                                           settings: RouteSettings(
                                               name: '/my-ebooks/${ebook.id}'),
