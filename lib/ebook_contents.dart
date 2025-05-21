@@ -1,46 +1,48 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
-import 'package:ebook_project/ebook_contents.dart';
-import 'package:ebook_project/models/ebook_topic.dart';
+import 'package:ebook_project/models/ebook_content.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_html/flutter_html.dart';
 
-class EbookTopicsPage extends StatefulWidget {
+class EbookContentsPage extends StatefulWidget {
   final String ebookId;
   final String subjectId;
   final String chapterId;
+  final String topicId;
   final String ebookName;
 
-  const EbookTopicsPage(
+  const EbookContentsPage(
       {super.key,
       required this.ebookId,
       required this.subjectId,
       required this.chapterId,
+      required this.topicId,
       required this.ebookName});
 
   @override
-  _EbookTopicsState createState() => _EbookTopicsState();
+  _EbookContentsState createState() => _EbookContentsState();
 }
 
-class _EbookTopicsState extends State<EbookTopicsPage> {
-  List<EbookTopic> ebookTopics = []; // Ensure this is initialized as a List
+class _EbookContentsState extends State<EbookContentsPage> {
+  List<EbookContent> ebookContents = []; // Ensure this is initialized as a List
   bool isLoading = true;
   bool isError = false;
 
   @override
   void initState() {
     super.initState();
-    fetchEbookTopics();
+    fetchEbookContents();
   }
 
-  Future<void> fetchEbookTopics() async {
+  Future<void> fetchEbookContents() async {
     ApiService apiService = ApiService();
     try {
       final data = await apiService.fetchEbookData(
-          "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters/${widget.chapterId}/topics");
+          "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters/${widget.chapterId}/topics/${widget.topicId}/contents");
       setState(() {
-        ebookTopics = (data['topics'] as List)
-            .map((subjectJson) => EbookTopic.fromJson(subjectJson))
+        ebookContents = (data['contents'] as List)
+            .map((questionJson) => EbookContent.fromJson(questionJson))
             .toList();
         isLoading = false;
       });
@@ -57,30 +59,19 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
   Widget build(BuildContext context) {
     return AppLayout(
       // title: 'Ebook Topics',
-      title: '${widget.ebookName} Topics',
+      title: '${widget.ebookName} Questions',
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: isLoading
             ? Center(child: CircularProgressIndicator())
             : ListView.builder(
-                itemCount: ebookTopics.length,
+                itemCount: ebookContents.length,
                 padding: const EdgeInsets.all(8.0),
                 itemBuilder: (context, index) {
-                  if (ebookTopics[index].title.isNotEmpty) {
+                  if (ebookContents[index].title.isNotEmpty) {
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EbookContentsPage(
-                              ebookId: widget.ebookId,
-                              subjectId: widget.subjectId,
-                              chapterId: widget.chapterId,
-                              topicId: ebookTopics[index].id.toString(),
-                              ebookName: widget.ebookName.toString(),
-                            ),
-                          ),
-                        );
+                        // Add navigation logic to the 'Chapters' screen with parameters
                       },
                       child: Card(
                         color: Colors.grey[200],
@@ -113,15 +104,18 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
                                   SizedBox(
                                     width:
                                         MediaQuery.of(context).size.width * 0.7,
-                                    child: Text(
-                                      ebookTopics[index].title,
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                    ),
+                                    // child: Text(
+                                    //   ebookContents[index].title,
+                                    //   style: TextStyle(
+                                    //     fontSize: 16.0,
+                                    //     fontWeight: FontWeight.bold,
+                                    //   ),
+                                    //   overflow: TextOverflow.ellipsis,
+                                    //   maxLines: 2,
+                                    // ),
+                                    child: Html(
+                                        data:
+                                        ebookDetail['features']),
                                   ),
                                 ],
                               ),
