@@ -62,7 +62,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       children: content.options.asMap().entries.map((entry) {
         final option = entry.value;
         final index = entry.key;
-        String answerKey = content.answer[index];
+        String answerKey = (index < content.answer.length) ? content.answer[index] : '';;
         String? selected = selectedAnswers[option.id];
         bool correctShown = showCorrect.contains(content.id);
 
