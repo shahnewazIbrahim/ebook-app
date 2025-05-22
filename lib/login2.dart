@@ -1,5 +1,4 @@
 import 'package:ebook_project/api/api_service.dart';
-import 'package:ebook_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,27 +26,23 @@ class _LoginPageState extends State<LoginPage> {
         SnackBar(content: Text('Logging in...')),
       );
       print(loginData['token']);
-
-      if (loginData['token'] != null && loginData['error'] == 0) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', loginData['token']);
-        await prefs.setString('userName', loginData['name']);
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MyHomePage(title: "Ebook")),
-        );
-      } else {
+      if(loginData['token'] != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        print(loginData['token']);
+        prefs.setString('auth_token', loginData['token']); // Save the token
+        print(prefs.getString('auth_token'));
+      }
+      else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed')),
+          SnackBar(content: Text('Problem...')),
         );
       }
       // Navigator.pushReplacementNamed(context, '/home');
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Problem...')),
-      );
+            SnackBar(content: Text('Problem...')),
+          );
     }
   }
 
