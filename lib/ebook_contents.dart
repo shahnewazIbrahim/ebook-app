@@ -68,60 +68,92 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
 
         return Row(
           children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: correctShown
-                    ? (answerKey == 'T' ? Colors.green[400] : Colors.red[400])
-                    : (selected == 'T' ? Colors.blue[400] : Colors.grey[300]),
-                minimumSize: const Size(28, 28), // ছোট উচ্চতা ও প্রস্থ
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
+            if(content.type == 1)
+              Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: correctShown
+                          ? (answerKey == 'T' ? Colors.green[400] : Colors.red[400])
+                          : (selected == 'T' ? Colors.blue[400] : Colors.grey[300]),
+                      minimumSize: const Size(28, 28), // ছোট উচ্চতা ও প্রস্থ
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (selectedAnswers[option.id] == 'T') {
+                          selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
+                        } else {
+                          selectedAnswers[option.id] = 'T'; // ✅ নতুন করে সেট করো
+                        }
+                      });
+                    },
+                    child: Text(
+                      'T',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: correctShown ||  selectedAnswers[option.id] == 'T' ? Colors.white : Colors.black
+                      ), // লেখার সাইজ ছোট
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: correctShown
+                          ? (answerKey == 'F' ? Colors.green[400] : Colors.red[400])
+                          : (selected == 'F' ? Colors.blue[400] : Colors.grey[300]),
+                      minimumSize: const Size(28, 28),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (selectedAnswers[option.id] == 'F') {
+                          selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
+                        } else {
+                          selectedAnswers[option.id] = 'F'; // ✅ নতুন করে সেট করো
+                        }
+                      });
+                    },
+                    child: Text(
+                      'F',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: correctShown || selectedAnswers[option.id] == 'F' ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              onPressed: () {
-                setState(() {
-                  if (selectedAnswers[option.id] == 'T') {
-                    selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
-                  } else {
-                    selectedAnswers[option.id] = 'T'; // ✅ নতুন করে সেট করো
-                  }
-                });
-              },
-              child: Text(
-                'T',
-                style: TextStyle(
+
+            if(content.type == 2)
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: correctShown
+                      ? (option.slNo == content.answer.toString() ? Colors.green[400] : Colors.red[400])
+                      : (selected == option.slNo ? Colors.blue[400] : Colors.grey[300]),
+                  minimumSize: const Size(28, 28),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: () {
+                  setState(() {
+                    if(selectedAnswers[option.id] == option.slNo) {
+                      selectedAnswers.remove(option.id);
+                    } else {
+                      selectedAnswers[option.id] =  option.slNo;
+                    }
+                  });
+                },
+                child: Text(
+                  option.slNo,
+                  style: TextStyle(
                     fontSize: 14,
-                    color: correctShown ||  selectedAnswers[option.id] == 'T' ? Colors.white : Colors.black
-                ), // লেখার সাইজ ছোট
-              ),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: correctShown
-                    ? (answerKey == 'F' ? Colors.green[400] : Colors.red[400])
-                    : (selected == 'F' ? Colors.blue[400] : Colors.grey[300]),
-                minimumSize: const Size(28, 28),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (selectedAnswers[option.id] == 'F') {
-                    selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
-                  } else {
-                    selectedAnswers[option.id] = 'F'; // ✅ নতুন করে সেট করো
-                  }
-                });
-              },
-              child: Text(
-                'F',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: correctShown || selectedAnswers[option.id] == 'F' ? Colors.white : Colors.black,
+                    color: correctShown || selectedAnswers[option.id] == option.slNo ? Colors.white : Colors.black,
+                  ),
                 ),
               ),
-            ),
-
             const SizedBox(width: 8),
             Expanded(child: Html(data: option.title)),
           ],
