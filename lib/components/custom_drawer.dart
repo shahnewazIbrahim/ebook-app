@@ -19,63 +19,76 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Drawer(
-      child: ListView(
-        children: <Widget>[
+      child: Column(
+        children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              gradient: LinearGradient(
+                colors: [
+                  Colors.blue.shade600,
+                  Colors.blue.shade800,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
-            child: Text(
-              title,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 24,
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-          ListTile(
-            leading: Icon(
-              // ignore: deprecated_member_use
-              FontAwesomeIcons.signInAlt,
-              size: 20,
-            ),
-            title: Text('Login'),
-            horizontalTitleGap: 5,
+          buildDrawerItem(
+            icon: FontAwesomeIcons.signInAlt,
+            label: 'Login',
             onTap: onLoginTap,
           ),
-          ListTile(
-            leading: Icon(
-              // ignore: deprecated_member_use
-              FontAwesomeIcons.homeAlt,
-              size: 20,
-            ),
-            title: Text('Home'),
-            horizontalTitleGap: 5,
+          buildDrawerItem(
+            icon: FontAwesomeIcons.homeAlt,
+            label: 'Home',
             onTap: onHomeTap,
           ),
-          ListTile(
-            leading: Icon(
-              // ignore: deprecated_member_use
-              FontAwesomeIcons.cog,
-              size: 20,
-            ),
-            title: Text('Settings'),
-            horizontalTitleGap: 5,
+          buildDrawerItem(
+            icon: FontAwesomeIcons.cog,
+            label: 'Settings',
             onTap: onSettingsTap,
           ),
-          ListTile(
-            leading: Icon(
-              // ignore: deprecated_member_use
-              FontAwesomeIcons.user,
-              size: 20,
-            ),
-            title: Text('User'),
-            horizontalTitleGap: 5,
+          buildDrawerItem(
+            icon: FontAwesomeIcons.user,
+            label: 'User',
             onTap: onUserTap,
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildDrawerItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, size: 20, color: Colors.blue[700]),
+      title: Text(
+        label,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      horizontalTitleGap: 8,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      onTap: onTap,
     );
   }
 }
