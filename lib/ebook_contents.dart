@@ -79,6 +79,15 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                       minimumSize: const Size(28, 28), // ছোট উচ্চতা ও প্রস্থ
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
+
+                      // 🔹 এখানে border যোগ করা হয়েছে
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100), // কোণ একটু গোলাকার করতে
+                        side: BorderSide(
+                          color: Colors.black26, // Border color
+                          width: 1.5,           // Border width
+                        ),
+                      ),
                     ),
                     onPressed: () {
                       setState(() {
@@ -106,6 +115,15 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                       minimumSize: const Size(28, 28),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
+                      // 🔹 এখানে border যোগ করা হয়েছে
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100), // কোণ একটু গোলাকার করতে
+                        side: BorderSide(
+                          color: Colors.black26, // Border color
+                          width: 1.5,           // Border width
+                        ),
+                      ),
                     ),
                     onPressed: () {
                       setState(() {
@@ -136,6 +154,15 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                   minimumSize: const Size(28, 28),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+
+                  // 🔹 এখানে border যোগ করা হয়েছে
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100), // কোণ একটু গোলাকার করতে
+                    side: BorderSide(
+                      color: Colors.black26, // Border color
+                      width: 1.5,           // Border width
+                    ),
+                  ),
                 ),
                 onPressed: () {
                   setState(() {
