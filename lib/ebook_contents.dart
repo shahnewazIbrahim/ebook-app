@@ -172,7 +172,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Html(data: content.title),
+                  Html(data: content.type != 3 ? "<b>${content.title}</b>" : content.title),
                   const SizedBox(height: 10),
                   buildOptionButtons(content),
                   const SizedBox(height: 12),
