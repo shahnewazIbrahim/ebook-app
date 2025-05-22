@@ -62,243 +62,172 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       children: content.options.asMap().entries.map((entry) {
         final option = entry.value;
         final index = entry.key;
-        String answerKey = (index < content.answer.length) ? content.answer[index] : '';;
+        String answerKey = (index < content.answer.length) ? content.answer[index] : '';
         String? selected = selectedAnswers[option.id];
         bool correctShown = showCorrect.contains(content.id);
 
-        return Row(
-          children: [
-            if(content.type == 1)
-              Row(
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: correctShown
-                          ? (answerKey == 'T' ? Colors.green[400] : Colors.red[400])
-                          : (selected == 'T' ? Colors.blue[400] : Colors.grey[300]),
-                      minimumSize: const Size(28, 28), // ছোট উচ্চতা ও প্রস্থ
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
-
-                      // 🔹 এখানে border যোগ করা হয়েছে
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100), // কোণ একটু গোলাকার করতে
-                        side: BorderSide(
-                          color: Colors.black26, // Border color
-                          width: 1.5,           // Border width
-                        ),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (selectedAnswers[option.id] == 'T') {
-                          selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
-                        } else {
-                          selectedAnswers[option.id] = 'T'; // ✅ নতুন করে সেট করো
-                        }
-                      });
-                    },
-                    child: Text(
-                      'T',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: correctShown ||  selectedAnswers[option.id] == 'T' ? Colors.white : Colors.black
-                      ), // লেখার সাইজ ছোট
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: correctShown
-                          ? (answerKey == 'F' ? Colors.green[400] : Colors.red[400])
-                          : (selected == 'F' ? Colors.blue[400] : Colors.grey[300]),
-                      minimumSize: const Size(28, 28),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-
-                      // 🔹 এখানে border যোগ করা হয়েছে
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100), // কোণ একটু গোলাকার করতে
-                        side: BorderSide(
-                          color: Colors.black26, // Border color
-                          width: 1.5,           // Border width
-                        ),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (selectedAnswers[option.id] == 'F') {
-                          selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
-                        } else {
-                          selectedAnswers[option.id] = 'F'; // ✅ নতুন করে সেট করো
-                        }
-                      });
-                    },
-                    child: Text(
-                      'F',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: correctShown || selectedAnswers[option.id] == 'F' ? Colors.white : Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            if(content.type == 2)
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: correctShown
-                      ? (option.slNo == content.answer.toString() ? Colors.green[400] : Colors.red[400])
-                      : (selected == option.slNo ? Colors.blue[400] : Colors.grey[300]),
-                  minimumSize: const Size(28, 28),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-
-                  // 🔹 এখানে border যোগ করা হয়েছে
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100), // কোণ একটু গোলাকার করতে
-                    side: BorderSide(
-                      color: Colors.black26, // Border color
-                      width: 1.5,           // Border width
-                    ),
-                  ),
-                ),
-                onPressed: () {
-                  setState(() {
-                    if(selectedAnswers[option.id] == option.slNo) {
-                      selectedAnswers.remove(option.id);
-                    } else {
-                      selectedAnswers[option.id] =  option.slNo;
-                    }
-                  });
-                },
-                child: Text(
-                  option.slNo,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: correctShown || selectedAnswers[option.id] == option.slNo ? Colors.white : Colors.black,
-                  ),
-                ),
-              ),
-            const SizedBox(width: 8),
-            Expanded(child: Html(data: option.title)),
-          ],
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (content.type == 1) ...[
+                buildTFButton(option, 'T', selected, correctShown, answerKey),
+                const SizedBox(width: 6),
+                buildTFButton(option, 'F', selected, correctShown, answerKey),
+              ],
+              if (content.type == 2)
+                buildSingleOptionButton(option, selected, correctShown, content.answer),
+              const SizedBox(width: 10),
+              Expanded(child: Html(data: option.title)),
+            ],
+          ),
         );
       }).toList(),
     );
   }
 
+  Widget buildTFButton(option, String label, String? selected, bool correctShown, String answerKey) {
+    final bool isSelected = selected == label;
+    final bool isCorrect = answerKey == label;
+
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: correctShown
+            ? (isCorrect ? Colors.green[700] : Colors.red[700])
+            : (isSelected ? Colors.blue[700] : Colors.grey[300]),
+        minimumSize: const Size(28, 28),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+          side: const BorderSide(color: Colors.black26, width: 1.5),
+        ),
+      ),
+      onPressed: () {
+        setState(() {
+          selectedAnswers[option.id] = isSelected ? '' : label;
+        });
+      },
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          color: correctShown || isSelected ? Colors.white : Colors.black,
+        ),
+      ),
+    );
+  }
+
+  Widget buildSingleOptionButton(option, String? selected, bool correctShown, String answer) {
+    final bool isSelected = selected == option.slNo;
+    final bool isCorrect = option.slNo == answer;
+
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: correctShown
+            ? (isCorrect ? Colors.green[700] : Colors.red[700])
+            : (isSelected ? Colors.blue[700] : Colors.grey[300]),
+        minimumSize: const Size(28, 28),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+          side: const BorderSide(color: Colors.black26, width: 1.5),
+        ),
+      ),
+      onPressed: () {
+        setState(() {
+          selectedAnswers[option.id] = isSelected ? '' : option.slNo;
+        });
+      },
+      child: Text(
+        option.slNo,
+        style: TextStyle(
+          fontSize: 14,
+          color: correctShown || isSelected ? Colors.white : Colors.black,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
     return AppLayout(
       title: '${widget.ebookName} Questions',
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
+        padding: const EdgeInsets.all(12),
         itemCount: ebookContents.length,
         itemBuilder: (context, index) {
           final content = ebookContents[index];
           return Card(
-            margin: const EdgeInsets.all(8),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 2,
+            margin: const EdgeInsets.symmetric(vertical: 8),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Html(data: content.title),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   buildOptionButtons(content),
-                  const SizedBox(height: 8),
-                  Row(
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 8,
                     children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[400],
-                          minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
-                        ),
-                        onPressed: () {
+                      buildActionButton(
+                        label: "Answer",
+                        onTap: () {
                           setState(() {
                             if (showCorrect.contains(content.id)) {
-                              showCorrect.remove(content.id); // 🔁 উত্তর লুকাও
+                              showCorrect.remove(content.id);
                             } else {
-                              showCorrect.add(content.id); // ✅ উত্তর দেখাও
+                              showCorrect.add(content.id);
                             }
                           });
                         },
-                        child: const Text(
-                            "Answer",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                            )),
+                        isActive: showCorrect.contains(content.id),
                       ),
-                      const SizedBox(width: 8),
                       if (content.hasDiscussion)
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[400],
-                            minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
-                          ),
-                          onPressed: () {
-                            // TODO: Discussion Modal
-                          },
-                          child: const Text(
-                              "Discussion",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                              )),
-                        ),
-                      const SizedBox(width: 8),
+                        buildActionButton(label: "Discussion", onTap: () {}, isActive: false),
                       if (content.hasReference)
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[400],
-                            minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
-                          ),
-                          onPressed: () {
-                            // TODO: Reference Modal
-                          },
-                          child: const Text(
-                              "Reference",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                              )),
-                        ),
-                      const SizedBox(width: 8),
+                        buildActionButton(label: "Reference", onTap: () {}, isActive: false),
                       if (content.hasSolveVideo)
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[400],
-                            minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
-                          ),
-                          onPressed: () {
-                            // TODO: Solve Video Modal
-                          },
-                          child: const Text(
-                              "Video",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                              )),
-                        ),
+                        buildActionButton(label: "Video", onTap: () {}, isActive: false),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget buildActionButton({
+    required String label,
+    required VoidCallback onTap,
+    bool isActive = false,
+  }) {
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isActive ? Colors.blue[800] : Colors.blue[500],
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 13, color: Colors.white),
       ),
     );
   }
