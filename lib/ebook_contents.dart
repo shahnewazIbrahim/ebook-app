@@ -71,10 +71,13 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: correctShown
-                    ? (answerKey == 'T' ? Colors.green : Colors.red)
-                    : (selected == 'T' ? Colors.blue : Colors.grey),
+                    ? (answerKey == 'T' ? Colors.green[200] : Colors.red[200])
+                    : (selected == 'T' ? Colors.blue[200] : Colors.grey[200]),
                 minimumSize: const Size(36, 36), // ছোট উচ্চতা ও প্রস্থ
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
+                textStyle: TextStyle(
+                  color: correctShown ? Colors.white : Colors.black,
+                ),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
               ),
               onPressed: () {
@@ -91,9 +94,12 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: correctShown
-                    ? (answerKey == 'F' ? Colors.green : Colors.red)
-                    : (selected == 'F' ? Colors.blue : Colors.grey),
+                    ? (answerKey == 'F' ? Colors.green[200] : Colors.red[200])
+                    : (selected == 'F' ? Colors.blue[200] : Colors.grey[200]),
                 minimumSize: const Size(36, 36),
+                textStyle: TextStyle(
+                  color: correctShown ? Colors.white : Colors.black,
+                ),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
