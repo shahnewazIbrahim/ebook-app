@@ -115,7 +115,8 @@ class _EbookContentsState extends State<EbookContentsPage> {
                                     // ),
                                     child: Html(
                                         data:
-                                        ebookDetail['features']),
+                                        ebookContents[index].title,
+                                  ),
                                   ),
                                 ],
                               ),
