@@ -71,34 +71,43 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: correctShown
-                    ? (answerKey == 'T'
-                    ? Colors.green
-                    : Colors.red)
+                    ? (answerKey == 'T' ? Colors.green : Colors.red)
                     : (selected == 'T' ? Colors.blue : Colors.grey),
+                minimumSize: const Size(36, 36), // ছোট উচ্চতা ও প্রস্থ
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
               ),
               onPressed: () {
                 setState(() {
                   selectedAnswers[option.id] = 'T';
                 });
               },
-              child: const Text('T'),
+              child: const Text(
+                'T',
+                style: TextStyle(fontSize: 14), // লেখার সাইজ ছোট
+              ),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: correctShown
-                    ? (answerKey == 'F'
-                    ? Colors.green
-                    : Colors.red)
+                    ? (answerKey == 'F' ? Colors.green : Colors.red)
                     : (selected == 'F' ? Colors.blue : Colors.grey),
+                minimumSize: const Size(36, 36),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               onPressed: () {
                 setState(() {
                   selectedAnswers[option.id] = 'F';
                 });
               },
-              child: const Text('F'),
+              child: const Text(
+                'F',
+                style: TextStyle(fontSize: 14),
+              ),
             ),
+
             const SizedBox(width: 8),
             Expanded(child: Html(data: option.title)),
           ],
