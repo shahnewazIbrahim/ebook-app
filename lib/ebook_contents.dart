@@ -154,6 +154,12 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                   Row(
                     children: [
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[400],
+                          minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
+                        ),
                         onPressed: () {
                           setState(() {
                             if (showCorrect.contains(content.id)) {
@@ -163,31 +169,69 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                             }
                           });
                         },
-                        child: const Text("Answer"),
+                        child: const Text(
+                            "Answer",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            )),
                       ),
                       const SizedBox(width: 8),
                       if (content.hasDiscussion)
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[400],
+                            minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
+                          ),
                           onPressed: () {
                             // TODO: Discussion Modal
                           },
-                          child: const Text("Discussion"),
+                          child: const Text(
+                              "Discussion",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                              )),
                         ),
                       const SizedBox(width: 8),
                       if (content.hasReference)
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[400],
+                            minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
+                          ),
                           onPressed: () {
                             // TODO: Reference Modal
                           },
-                          child: const Text("Reference"),
+                          child: const Text(
+                              "Reference",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                              )),
                         ),
                       const SizedBox(width: 8),
                       if (content.hasSolveVideo)
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[400],
+                            minimumSize: const Size(35, 35), // ছোট উচ্চতা ও প্রস্থ
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // ভিতরের স্পেস
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
+                          ),
                           onPressed: () {
                             // TODO: Solve Video Modal
                           },
-                          child: const Text("Video"),
+                          child: const Text(
+                              "Video",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                              )),
                         ),
                     ],
                   )
