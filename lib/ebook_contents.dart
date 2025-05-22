@@ -75,9 +75,6 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                     : (selected == 'T' ? Colors.blue[200] : Colors.grey[200]),
                 minimumSize: const Size(36, 36), // ছোট উচ্চতা ও প্রস্থ
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
-                textStyle: TextStyle(
-                  color: correctShown ? Colors.white : Colors.black,
-                ),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
               ),
               onPressed: () {
@@ -85,9 +82,12 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                   selectedAnswers[option.id] = 'T';
                 });
               },
-              child: const Text(
+              child: Text(
                 'T',
-                style: TextStyle(fontSize: 14), // লেখার সাইজ ছোট
+                style: TextStyle(
+                    fontSize: 14,
+                    color: correctShown ? Colors.white : Colors.black
+                ), // লেখার সাইজ ছোট
               ),
             ),
             const SizedBox(width: 8),
@@ -97,9 +97,6 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                     ? (answerKey == 'F' ? Colors.green[200] : Colors.red[200])
                     : (selected == 'F' ? Colors.blue[200] : Colors.grey[200]),
                 minimumSize: const Size(36, 36),
-                textStyle: TextStyle(
-                  color: correctShown ? Colors.white : Colors.black,
-                ),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
@@ -108,9 +105,12 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                   selectedAnswers[option.id] = 'F';
                 });
               },
-              child: const Text(
+              child: Text(
                 'F',
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: correctShown ? Colors.white : Colors.black,
+                ),
               ),
             ),
 
@@ -148,7 +148,11 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            showCorrect.add(content.id);
+                            if (showCorrect.contains(content.id)) {
+                              showCorrect.remove(content.id); // 🔁 উত্তর লুকাও
+                            } else {
+                              showCorrect.add(content.id); // ✅ উত্তর দেখাও
+                            }
                           });
                         },
                         child: const Text("Answer"),
