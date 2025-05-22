@@ -71,22 +71,26 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: correctShown
-                    ? (answerKey == 'T' ? Colors.green[200] : Colors.red[200])
-                    : (selected == 'T' ? Colors.blue[200] : Colors.grey[200]),
-                minimumSize: const Size(36, 36), // ছোট উচ্চতা ও প্রস্থ
+                    ? (answerKey == 'T' ? Colors.green[400] : Colors.red[400])
+                    : (selected == 'T' ? Colors.blue[400] : Colors.grey[300]),
+                minimumSize: const Size(28, 28), // ছোট উচ্চতা ও প্রস্থ
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // ভিতরের স্পেস
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap, // tap এরিয়া কমানো
               ),
               onPressed: () {
                 setState(() {
-                  selectedAnswers[option.id] = 'T';
+                  if (selectedAnswers[option.id] == 'T') {
+                    selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
+                  } else {
+                    selectedAnswers[option.id] = 'T'; // ✅ নতুন করে সেট করো
+                  }
                 });
               },
               child: Text(
                 'T',
                 style: TextStyle(
                     fontSize: 14,
-                    color: correctShown ? Colors.white : Colors.black
+                    color: correctShown ||  selectedAnswers[option.id] == 'T' ? Colors.white : Colors.black
                 ), // লেখার সাইজ ছোট
               ),
             ),
@@ -94,22 +98,26 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: correctShown
-                    ? (answerKey == 'F' ? Colors.green[200] : Colors.red[200])
-                    : (selected == 'F' ? Colors.blue[200] : Colors.grey[200]),
-                minimumSize: const Size(36, 36),
+                    ? (answerKey == 'F' ? Colors.green[400] : Colors.red[400])
+                    : (selected == 'F' ? Colors.blue[400] : Colors.grey[300]),
+                minimumSize: const Size(28, 28),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               onPressed: () {
                 setState(() {
-                  selectedAnswers[option.id] = 'F';
+                  if (selectedAnswers[option.id] == 'F') {
+                    selectedAnswers.remove(option.id); // 🔁 রিমুভ করলে পুরোটাই রিসেট হয়
+                  } else {
+                    selectedAnswers[option.id] = 'F'; // ✅ নতুন করে সেট করো
+                  }
                 });
               },
               child: Text(
                 'F',
                 style: TextStyle(
                   fontSize: 14,
-                  color: correctShown ? Colors.white : Colors.black,
+                  color: correctShown || selectedAnswers[option.id] == 'F' ? Colors.white : Colors.black,
                 ),
               ),
             ),
