@@ -50,8 +50,8 @@ class AppLayout extends StatelessWidget {
         onSettingsTap: () {
           Navigator.pushNamed(context, '/settings');
         },
-        onUserTap: () {
-          Navigator.pushNamed(context, '/user');
+        onProfileTap: () {
+          Navigator.pushNamed(context, '/profile');
         },
       )
           : null,

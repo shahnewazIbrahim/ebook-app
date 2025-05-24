@@ -9,7 +9,7 @@ class CustomDrawer extends StatefulWidget {
   final VoidCallback onHomeTap;
   final VoidCallback onLoginTap;
   final VoidCallback onSettingsTap;
-  final VoidCallback onUserTap;
+  final VoidCallback onProfileTap;
 
   const CustomDrawer({
     Key? key,
@@ -17,7 +17,7 @@ class CustomDrawer extends StatefulWidget {
     required this.onHomeTap,
     required this.onLoginTap,
     required this.onSettingsTap,
-    required this.onUserTap,
+    required this.onProfileTap,
   }) : super(key: key);
 
   @override
@@ -103,7 +103,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           buildDrawerItem(
             icon: FontAwesomeIcons.user,
             label: 'User',
-            onTap: widget.onUserTap,
+            onTap: widget.onProfileTap,
           ),
           buildDrawerItem(
             icon: FontAwesomeIcons.homeAlt,

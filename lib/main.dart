@@ -1,3 +1,4 @@
+import 'package:ebook_project/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => MyHomePage(title: 'My Ebooks'),
         '/home': (context) => MyHomePage(title: 'My Ebooks'),
         '/login': (context) => LoginPage(),
+        '/profile': (context) => ProfilePage(),
       },
     );
   }
