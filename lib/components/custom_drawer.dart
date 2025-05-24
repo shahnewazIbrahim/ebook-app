@@ -100,6 +100,21 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ),
           ),
+          buildDrawerItem(
+            icon: FontAwesomeIcons.user,
+            label: 'User',
+            onTap: widget.onUserTap,
+          ),
+          buildDrawerItem(
+            icon: FontAwesomeIcons.homeAlt,
+            label: 'Home',
+            onTap: widget.onHomeTap,
+          ),
+          buildDrawerItem(
+            icon: FontAwesomeIcons.cog,
+            label: 'Settings',
+            onTap: widget.onSettingsTap,
+          ),
           if (!isLoggedIn)
             buildDrawerItem(
               icon: FontAwesomeIcons.signInAlt,
@@ -112,21 +127,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'Logout',
               onTap: () => logout(context),
             ),
-          buildDrawerItem(
-            icon: FontAwesomeIcons.homeAlt,
-            label: 'Home',
-            onTap: widget.onHomeTap,
-          ),
-          buildDrawerItem(
-            icon: FontAwesomeIcons.cog,
-            label: 'Settings',
-            onTap: widget.onSettingsTap,
-          ),
-          buildDrawerItem(
-            icon: FontAwesomeIcons.user,
-            label: 'User',
-            onTap: widget.onUserTap,
-          ),
         ],
       ),
     );

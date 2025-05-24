@@ -4,9 +4,16 @@ import 'custom_drawer.dart';
 class AppLayout extends StatelessWidget {
   final String title;
   final Widget body;
+  final bool showDrawer;
+  final bool showNavBar;
 
-  const AppLayout({Key? key, required this.title, required this.body})
-      : super(key: key);
+  const AppLayout({
+    super.key,
+    required this.title,
+    required this.body,
+    this.showDrawer = true,
+    this.showNavBar = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +29,17 @@ class AppLayout extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         centerTitle: true,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      endDrawer: CustomDrawer(
+
+      // Drawer show or not
+      endDrawer: showDrawer
+          ? CustomDrawer(
         title: 'My Ebooks',
         onLoginTap: () {
           Navigator.pushNamed(context, '/login');
@@ -45,7 +53,9 @@ class AppLayout extends StatelessWidget {
         onUserTap: () {
           Navigator.pushNamed(context, '/user');
         },
-      ),
+      )
+          : null,
+
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -53,7 +63,9 @@ class AppLayout extends StatelessWidget {
           child: body,
         ),
       ),
-      bottomNavigationBar: Theme.of(context).useMaterial3
+
+      // Bottom Navigation show or not
+      bottomNavigationBar: showNavBar && Theme.of(context).useMaterial3
           ? NavigationBar(
         backgroundColor: isDark ? Colors.grey[850] : Colors.grey[100],
         height: 60,

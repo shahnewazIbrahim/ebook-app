@@ -1,4 +1,5 @@
 import 'package:ebook_project/api/api_service.dart';
+import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,60 +14,61 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Validate input fields and handle login
   void _login() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     ApiService apiService = ApiService();
+
     if (_formKey.currentState!.validate()) {
       final loginData = await apiService.postData('/login', {
-        'username' : username,
-        'password' : password,
+        'username': username,
+        'password': password,
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Logging in...')),
-      );
-      print(loginData['token']);
+
+      if (loginData['error'] > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(loginData['message'] ?? 'Login error')),
+        );
+        return;
+      }
 
       if (loginData['token'] != null && loginData['error'] == 0) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', loginData['token']);
         await prefs.setString('userName', loginData['name']);
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Logging in...')),
+        );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MyHomePage(title: "Ebook")),
+          MaterialPageRoute(builder: (context) => MyHomePage(title: "My Ebooks")),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed')),
+          const SnackBar(content: Text('Login failed')),
         );
       }
-      // Navigator.pushReplacementNamed(context, '/home');
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Problem...')),
+        const SnackBar(content: Text('Invalid input')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Login"),
-        backgroundColor: Colors.blue,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SingleChildScrollView(
+    return AppLayout(
+      title: "Login",
+      showDrawer: false,
+      showNavBar: false,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // App Logo or Title
-                Text(
+                const Text(
                   "Ebook App",
                   style: TextStyle(
                     fontSize: 32,
@@ -74,89 +76,62 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.blue,
                   ),
                 ),
-                SizedBox(height: 30),
-
-                // Login Form
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      // Username Field
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          labelText: 'Username',
-                          prefixIcon: Icon(Icons.person),
-                          border: OutlineInputBorder(),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your username';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-
-                      // Password Field
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          prefixIcon: Icon(Icons.lock),
-                          border: OutlineInputBorder(),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 30),
-
-                      // Login Button
-                      ElevatedButton(
-                        onPressed: _login,
-                        child: Text('Login'),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          minimumSize: Size(double.infinity, 50),
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ],
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Enter username' : null,
                 ),
-
-                SizedBox(height: 20),
-
-                // Forgot Password and Sign Up Links
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Enter password' : null,
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: _login,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Login'),
+                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
                       onPressed: () {
-                        // Navigate to Forgot Password Page (Implement this page)
                         Navigator.pushNamed(context, '/forgot-password');
                       },
-                      child: Text("Forgot Password?"),
+                      child: const Text("Forgot Password?"),
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     TextButton(
                       onPressed: () {
-                        // Navigate to Sign Up Page (Implement this page)
                         Navigator.pushNamed(context, '/sign-up');
                       },
-                      child: Text("Sign Up"),
+                      child: const Text("Sign Up"),
                     ),
                   ],
                 ),
