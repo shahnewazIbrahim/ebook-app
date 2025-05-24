@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:ebook_project/api/routes.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   final String title;
   final VoidCallback onHomeTap;
   final VoidCallback onLoginTap;
@@ -18,9 +21,59 @@ class CustomDrawer extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
 
+class _CustomDrawerState extends State<CustomDrawer> {
+  bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  Future<void> checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    setState(() {
+      isLoggedIn = token != null;
+    });
+  }
+
+  Future<void> logout(BuildContext context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token != null) {
+        final response = await http.post(
+          getFullUrl('/logout'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 204) {
+          // Clear local storage
+          await prefs.clear();
+
+          // Navigate to login
+          if (context.mounted) {
+            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+          }
+        } else {
+          print("Logout failed: ${response.statusCode}");
+        }
+      }
+    } catch (e) {
+      print("Logout error: $e");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
       child: Column(
         children: [
@@ -38,8 +91,8 @@ class CustomDrawer extends StatelessWidget {
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                title,
-                style: TextStyle(
+                widget.title,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -47,25 +100,32 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
           ),
-          buildDrawerItem(
-            icon: FontAwesomeIcons.signInAlt,
-            label: 'Login',
-            onTap: onLoginTap,
-          ),
+          if (!isLoggedIn)
+            buildDrawerItem(
+              icon: FontAwesomeIcons.signInAlt,
+              label: 'Login',
+              onTap: widget.onLoginTap,
+            ),
+          if (isLoggedIn)
+            buildDrawerItem(
+              icon: FontAwesomeIcons.signOutAlt,
+              label: 'Logout',
+              onTap: () => logout(context),
+            ),
           buildDrawerItem(
             icon: FontAwesomeIcons.homeAlt,
             label: 'Home',
-            onTap: onHomeTap,
+            onTap: widget.onHomeTap,
           ),
           buildDrawerItem(
             icon: FontAwesomeIcons.cog,
             label: 'Settings',
-            onTap: onSettingsTap,
+            onTap: widget.onSettingsTap,
           ),
           buildDrawerItem(
             icon: FontAwesomeIcons.user,
             label: 'User',
-            onTap: onUserTap,
+            onTap: widget.onUserTap,
           ),
         ],
       ),
