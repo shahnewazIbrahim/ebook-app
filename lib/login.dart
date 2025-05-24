@@ -15,6 +15,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   void _login() async {
+    final messenger = ScaffoldMessenger.of(context); // ✅ important!
+
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     ApiService apiService = ApiService();
@@ -25,32 +27,39 @@ class _LoginPageState extends State<LoginPage> {
         'password': password,
       });
 
+      print("Login response: $loginData"); // debug log
+
+      // ✅ Error response
       if (loginData['error'] > 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(content: Text(loginData['message'] ?? 'Login error')),
         );
         return;
       }
 
+      // ✅ Success
       if (loginData['token'] != null && loginData['error'] == 0) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', loginData['token']);
         await prefs.setString('userName', loginData['name']);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Logging in...')),
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Login successful!')),
         );
+
+        await Future.delayed(const Duration(milliseconds: 500)); // wait before redirect
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MyHomePage(title: "My Ebooks")),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(content: Text('Login failed')),
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(content: Text('Invalid input')),
       );
     }
@@ -60,8 +69,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return AppLayout(
       title: "Login",
-      showDrawer: false,
-      showNavBar: false,
+      showDrawer: false,  // 🚫 Drawer off
+      showNavBar: false,  // 🚫 Bottom nav off
       body: Center(
         child: SingleChildScrollView(
           child: Form(
