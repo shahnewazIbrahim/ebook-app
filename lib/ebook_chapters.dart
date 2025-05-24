@@ -10,18 +10,19 @@ class EbookChaptersPage extends StatefulWidget {
   final String subjectId;
   final String ebookName;
 
-  const EbookChaptersPage(
-      {super.key,
-      required this.ebookId,
-      required this.subjectId,
-      required this.ebookName});
+  const EbookChaptersPage({
+    super.key,
+    required this.ebookId,
+    required this.subjectId,
+    required this.ebookName,
+  });
 
   @override
   _EbookChaptersState createState() => _EbookChaptersState();
 }
 
 class _EbookChaptersState extends State<EbookChaptersPage> {
-  List<EbookChapter> ebookChapters = []; // Ensure this is initialized as a List
+  List<EbookChapter> ebookChapters = [];
   bool isLoading = true;
   bool isError = false;
 
@@ -35,17 +36,18 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
     ApiService apiService = ApiService();
     try {
       final data = await apiService.fetchEbookData(
-          "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters");
+        "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters",
+      );
       setState(() {
         ebookChapters = (data['chapters'] as List)
-            .map((subjectJson) => EbookChapter.fromJson(subjectJson))
+            .map((chapterJson) => EbookChapter.fromJson(chapterJson))
             .toList();
         isLoading = false;
       });
     } catch (error) {
       setState(() {
         isLoading = false;
-        isError = true; // Optional: handle error state
+        isError = true;
       });
       print("Error fetching ebook chapters: $error");
     }
@@ -54,84 +56,99 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
   @override
   Widget build(BuildContext context) {
     return AppLayout(
-      // title: 'Ebook Chapters',
       title: '${widget.ebookName} Chapters',
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: isLoading
-            ? Center(child: CircularProgressIndicator())
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : isError
+          ? const Center(child: Text('Failed to load chapters'))
+          : Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: ebookChapters.isEmpty
+            ? const Center(
+          child: Text(
+            'No Chapters Available',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        )
             : ListView.builder(
-                itemCount: ebookChapters.length,
-                padding: const EdgeInsets.all(8.0),
-                itemBuilder: (context, index) {
-                  if (ebookChapters[index].title.isNotEmpty) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EbookTopicsPage(
-                              ebookId: widget.ebookId,
-                              subjectId: widget.subjectId,
-                              chapterId: ebookChapters[index].id.toString(),
-                              ebookName: widget.ebookName.toString(),
-                            ),
-                          ),
-                        );
+          itemCount: ebookChapters.length,
+          itemBuilder: (context, index) {
+            final chapter = ebookChapters[index];
+
+            if (chapter.title.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EbookTopicsPage(
+                      ebookId: widget.ebookId,
+                      subjectId: widget.subjectId,
+                      chapterId: chapter.id.toString(),
+                      ebookName: widget.ebookName,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFe0f2fe), Color(0xFFbae6fd)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(14.0),
+                child: Row(
+                  children: [
+                    ShaderMask(
+                      shaderCallback: (bounds) {
+                        return const LinearGradient(
+                          colors: [Color(0xFF0ea5e9), Color(0xFF0369a1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds);
                       },
-                      child: Card(
-                        color: Colors.grey[200],
-                        margin: EdgeInsets.symmetric(vertical: 8.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            children: [
-                              ShaderMask(
-                                shaderCallback: (bounds) {
-                                  return LinearGradient(
-                                    colors: [
-                                      Colors.blue[200]!,
-                                      Colors.blue[600]!
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ).createShader(bounds);
-                                },
-                                child: Icon(
-                                  FontAwesomeIcons.book,
-                                  color: Colors.white,
-                                  size: 30,
-                                ),
-                              ),
-                              SizedBox(width: 10.0),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.7,
-                                    child: Text(
-                                      ebookChapters[index].title,
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                      child: const Icon(
+                        FontAwesomeIcons.book,
+                        color: Colors.white,
+                        size: 28,
                       ),
-                    );
-                  } else {
-                    return const SizedBox.shrink(); // Skip empty titles
-                  }
-                },
+                    ),
+                    const SizedBox(width: 14.0),
+                    Expanded(
+                      child: Text(
+                        chapter.title,
+                        style: const TextStyle(
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0f172a),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            );
+          },
+        ),
       ),
     );
   }
