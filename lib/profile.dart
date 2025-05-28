@@ -92,13 +92,13 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 8),
             Chip(
               label: Text(
-                userData['is_premium_user'] == 'Yes'
-                    ? "Premium User"
-                    : "Free User",
+                userData['status'] == 1
+                    ? "Active"
+                    : "Inactive",
                 style: const TextStyle(color: Colors.white),
               ),
               backgroundColor:
-              userData['is_premium_user'] == 'Yes'
+              userData['status'] == 1
                   ? Colors.green
                   : Colors.orange,
             ),
@@ -115,8 +115,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildRow("BMDC No", userData['bmdc_no']),
-                    _buildRow("User Type", userData['type']),
-                    _buildRow("Status", userData['status'] == 1 ? 'Active' : 'Inactive'),
+                    _buildRow("User Type", userData['type'] == 1 ? "User" : "Admin"),
+                    _buildRow("Birthdate", userData['date_of_birth']),
                     _buildRow("Facebook", userData['facebook_id_link']),
                     _buildRow("Created At", userData['created_at']),
                   ],
