@@ -307,59 +307,85 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
 
   Widget buildDiscussionModal() {
     if (!showDiscussionModal) return const SizedBox.shrink();
+
     return Stack(
       children: [
         Positioned.fill(
           child: GestureDetector(
-            onTap: () {
-              setState(() => showDiscussionModal = false);
-            },
+            onTap: () => setState(() => showDiscussionModal = false),
             child: Container(color: Colors.black.withOpacity(0.5)),
           ),
         ),
         Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.85,
-            height: 400,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Text("Discussion",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
-                    IconButton(
-                      onPressed: () => setState(() => showDiscussionModal = false),
-                      icon: const Icon(Icons.close),
-                    )
-                  ],
-                ),
-                const Divider(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Html(
-                      data: discussionContent,
-                      style: {
-                        "body": Style(fontSize: FontSize.small),
-                        "p": Style(fontSize: FontSize.small),
-                      },
+          child: Material( // ✅ Modal content inside Material
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              height: 500,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white, // ✅ Pure white background
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          color: Colors.white, // 🔍 Test color to see background issue
+                          child: const Text(
+                            "Discussion",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              backgroundColor: Colors.transparent, // ✅ no yellow
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => setState(() => showDiscussionModal = false),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 1, thickness: 1, color: Colors.black12),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Html(
+                        data: discussionContent,
+                        style: {
+                          "*": Style(
+                            backgroundColor: Colors.transparent,
+                            fontSize: FontSize.small,
+                            color: Colors.black,
+                          ),
+                          "p": Style(
+                            fontSize: FontSize.small,
+                            backgroundColor: Colors.transparent,
+                            margin: Margins.only(bottom: 6),
+                          ),
+                          "span": Style(backgroundColor: Colors.transparent),
+                          "mark": Style(backgroundColor: Colors.transparent),
+                          "table": Style(backgroundColor: Colors.transparent),
+                          "td": Style(backgroundColor: Colors.transparent),
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ],
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
