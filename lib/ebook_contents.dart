@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/models/ebook_content.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class EbookContentsPage extends StatefulWidget {
   final String ebookId;
@@ -33,6 +34,9 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
 
   String discussionContent = '';
   bool showDiscussionModal = false;
+
+  List<Map<String, dynamic>> solveVideos = [];
+  bool showVideoModal = false;
 
   @override
   void initState() {
@@ -76,6 +80,110 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       );
     }
   }
+
+  Future<void> fetchSolveVideos(String contentId) async {
+    ApiService apiService = ApiService();
+    try {
+      final data = await apiService.fetchEbookData(
+          "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters/${widget.chapterId}/topics/${widget.topicId}/contents/$contentId/solve-videos");
+
+      solveVideos = (data['solve_videos'] as List)
+          .map((e) => {
+        'title': e['title'] ?? 'Video',
+        'video_url': e['link'] ?? e['link'], // 'link' or 'video_url' যে টা আসে
+      })
+          .where((v) => v['video_url'] != null)
+          .toList();
+print("solve videos: $data['solve_videos']");
+      setState(() {
+        showVideoModal = true;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to load videos")));
+    }
+  }
+
+  Widget buildVideoModal() {
+    if (!showVideoModal) return const SizedBox.shrink();
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () => setState(() => showVideoModal = false),
+            child: Container(color: Colors.black.withOpacity(0.5)),
+          ),
+        ),
+        Center(
+          child: Material( // ✅ Material wrapper added
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              height: 400,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Text("Solve Videos",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      ),
+                      IconButton(
+                        onPressed: () => setState(() => showVideoModal = false),
+                        icon: const Icon(Icons.close),
+                      )
+                    ],
+                  ),
+                  const Divider(),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: solveVideos.length,
+                      itemBuilder: (context, index) {
+                        final video = solveVideos[index];
+                        final title = video['title'] ?? 'No Title';
+                        final url = video['video_url'];
+
+                        if (url == null || YoutubePlayer.convertUrlToId(url) == null) {
+                          return ListTile(
+                            title: Text(title),
+                            subtitle: const Text("Invalid or missing video URL"),
+                            trailing: const Icon(Icons.error, color: Colors.red),
+                          );
+                        }
+
+                        final videoId = YoutubePlayer.convertUrlToId(url)!;
+
+                        return ListTile(
+                          title: Text(title),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.play_circle_fill, color: Colors.red),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) =>
+                                      YoutubePlayerPage(videoId: videoId)));
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
 
   Widget buildOptionButtons(EbookContent content) {
     return Column(
@@ -239,17 +347,12 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                     child: Html(
                       data: discussionContent,
                       style: {
-                        "body": Style(
-                          fontSize: FontSize.small, // তুমি চাইলে এখানে FontSize(12.0) ও দিতে পারো
-                        ),
-                        "p": Style(
-                          fontSize: FontSize.small,
-                        ),
+                        "body": Style(fontSize: FontSize.small),
+                        "p": Style(fontSize: FontSize.small),
                       },
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -306,13 +409,17 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                           if (content.hasDiscussion)
                             buildActionButton(
                               label: "Discussion",
-                              onTap: () => fetchDiscussionContent(content.id.toString()),
+                              onTap: () =>
+                                  fetchDiscussionContent(content.id.toString()),
                               isActive: false,
                             ),
-                          if (content.hasReference)
-                            buildActionButton(label: "Reference", onTap: () {}, isActive: false),
                           if (content.hasSolveVideo)
-                            buildActionButton(label: "Video", onTap: () {}, isActive: false),
+                            buildActionButton(
+                              label: "Video",
+                              onTap: () =>
+                                  fetchSolveVideos(content.id.toString()),
+                              isActive: false,
+                            ),
                         ],
                       ),
                     ],
@@ -323,6 +430,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
           ),
         ),
         buildDiscussionModal(),
+        buildVideoModal(),
       ],
     );
   }
@@ -345,6 +453,27 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       child: Text(
         label,
         style: const TextStyle(fontSize: 13, color: Colors.white),
+      ),
+    );
+  }
+}
+
+class YoutubePlayerPage extends StatelessWidget {
+  final String videoId;
+  const YoutubePlayerPage({super.key, required this.videoId});
+
+  @override
+  Widget build(BuildContext context) {
+    final YoutubePlayerController controller = YoutubePlayerController(
+      initialVideoId: videoId,
+      flags: const YoutubePlayerFlags(autoPlay: true),
+    );
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Solve Video")),
+      body: YoutubePlayer(
+        controller: controller,
+        showVideoProgressIndicator: true,
       ),
     );
   }
