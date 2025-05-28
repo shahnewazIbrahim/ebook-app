@@ -14,17 +14,38 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() async {
+  void _showTopSnackBar(String message, {Color bgColor = Colors.red, IconData? icon}) {
     final messenger = ScaffoldMessenger.of(context);
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            if (icon != null)
+              Icon(icon, color: Colors.white),
+            if (icon != null)
+              const SizedBox(width: 10),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: bgColor,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 
+  void _login() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     ApiService apiService = ApiService();
 
     if (!_formKey.currentState!.validate()) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Invalid input')),
-      );
+      _showTopSnackBar('Invalid input', bgColor: Colors.orange, icon: Icons.warning);
       return;
     }
 
@@ -33,31 +54,22 @@ class _LoginPageState extends State<LoginPage> {
       'password': password,
     });
 
-    // যদি রেসপন্স null বা map না হয় বা error key না থাকে
     if (loginData == null || loginData is! Map || !loginData.containsKey('error')) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Unexpected server error')),
-      );
+      _showTopSnackBar('Unexpected server error');
       return;
     }
 
-    // যদি রেসপন্সে error থাকে
     if (loginData['error'] > 0) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(loginData['message'] ?? 'Login error')),
-      );
+      _showTopSnackBar(loginData['message'] ?? 'Login error');
       return;
     }
 
-    // সফল লগইন
     if (loginData['token'] != null && loginData['error'] == 0) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', loginData['token']);
       await prefs.setString('userName', loginData['name']);
 
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Login successful!')),
-      );
+      _showTopSnackBar('Login successful!', bgColor: Colors.green, icon: Icons.check_circle);
 
       await Future.delayed(const Duration(milliseconds: 500));
 
@@ -66,9 +78,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => MyHomePage(title: "My Ebooks")),
       );
     } else {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Login failed')),
-      );
+      _showTopSnackBar('Login failed');
     }
   }
 
