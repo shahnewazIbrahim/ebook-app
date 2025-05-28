@@ -69,7 +69,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (content.type == 1) ...[
                 buildTFButton(option, 'T', selected, correctShown, answerKey),
@@ -200,7 +200,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                   content.type == 3
                       ? buildImageContent(content.title)
                       : Html(data: "<b>${content.title}</b>"),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   buildOptionButtons(content),
                   const SizedBox(height: 12),
                   Wrap(
