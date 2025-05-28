@@ -116,64 +116,93 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
           ),
         ),
         Center(
-          child: Material( // ✅ Material wrapper added
-            borderRadius: BorderRadius.circular(12),
+          child: Material(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.transparent,
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.85,
-              height: 400,
-              padding: const EdgeInsets.all(16),
+              width: MediaQuery.of(context).size.width * 0.90,
+              height: 480,
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                    color: Colors.black26,
+                    offset: Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
+                      const Icon(Icons.ondemand_video, color: Colors.redAccent),
+                      const SizedBox(width: 8),
                       const Expanded(
-                        child: Text("Solve Videos",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          "Solve Videos",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
                       ),
                       IconButton(
                         onPressed: () => setState(() => showVideoModal = false),
-                        icon: const Icon(Icons.close),
+                        icon: const Icon(Icons.close, color: Colors.grey),
                       )
                     ],
                   ),
-                  const Divider(),
+                  const Divider(height: 24, thickness: 1.2),
                   Expanded(
-                    child: ListView.builder(
+                    child: solveVideos.isEmpty
+                        ? const Center(
+                      child: Text(
+                        "No videos available",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                        : ListView.separated(
                       itemCount: solveVideos.length,
+                      separatorBuilder: (_, __) => const Divider(),
                       itemBuilder: (context, index) {
                         final video = solveVideos[index];
                         final title = video['title'] ?? 'No Title';
                         final url = video['video_url'];
 
-                        if (url == null || YoutubePlayer.convertUrlToId(url) == null) {
+                        final videoId = YoutubePlayer.convertUrlToId(url ?? '');
+                        if (url == null || videoId == null) {
                           return ListTile(
+                            leading: const Icon(Icons.error, color: Colors.red),
                             title: Text(title),
                             subtitle: const Text("Invalid or missing video URL"),
-                            trailing: const Icon(Icons.error, color: Colors.red),
                           );
                         }
 
-                        final videoId = YoutubePlayer.convertUrlToId(url)!;
-
                         return ListTile(
-                          title: Text(title),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.play_circle_fill, color: Colors.red),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          leading: IconButton(
+                            icon: const Icon(Icons.play_circle_fill, color: Colors.redAccent, size: 36),
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) =>
-                                      YoutubePlayerPage(videoId: videoId)));
+                                builder: (_) => YoutubePlayerPage(videoId: videoId),
+                              ));
                             },
+                            tooltip: "Play Video",
+                          ),
+                          title: Text(
+                            title,
+                            style: const TextStyle(fontSize: 14),
                           ),
                         );
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -182,7 +211,6 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       ],
     );
   }
-
 
 
   Widget buildOptionButtons(EbookContent content) {
