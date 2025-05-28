@@ -94,7 +94,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       })
           .where((v) => v['video_url'] != null)
           .toList();
-print("solve videos: $data['solve_videos']");
+
       setState(() {
         showVideoModal = true;
       });
