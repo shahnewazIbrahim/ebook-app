@@ -151,9 +151,34 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
     );
   }
 
+  Widget buildImageContent(String htmlString) {
+    final RegExp exp = RegExp(r'<img[^>]+src="([^">]+)"');
+    final match = exp.firstMatch(htmlString);
+    final imageUrl = match?.group(1);
+
+    if (imageUrl == null) {
+      return const Text('Image not found');
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
     return AppLayout(
       title: '${widget.ebookName} Questions',
       body: isLoading
@@ -168,11 +193,13 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
             elevation: 2,
             margin: const EdgeInsets.symmetric(vertical: 8),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Html(data: content.type != 3 ? "<b>${content.title}</b>" : content.title),
+                  content.type == 3
+                      ? buildImageContent(content.title)
+                      : Html(data: "<b>${content.title}</b>"),
                   const SizedBox(height: 10),
                   buildOptionButtons(content),
                   const SizedBox(height: 12),
