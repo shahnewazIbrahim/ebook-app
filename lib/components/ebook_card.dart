@@ -12,35 +12,43 @@ class EbookCard extends StatelessWidget {
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
 
-    // Check if the URL can be launched
     if (await canLaunchUrl(uri)) {
-      // Launch the URL
       await launchUrl(uri);
     } else {
       throw 'Could not launch $url';
     }
   }
 
-  Color _getButtonColor(String? buttonValue) {
+  LinearGradient _getButtonGradient(String? buttonValue) {
     switch (buttonValue) {
       case 'Read E-Book':
-        return Colors.blue;
+        return LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent]);
       case 'Renew Softcopy':
-        return Colors.red;
+        return LinearGradient(colors: [Colors.red, Colors.redAccent]);
       case 'Continue':
-        return Colors.yellow;
+        return LinearGradient(colors: [Colors.purple, Colors.purpleAccent]);
       default:
-        return Colors.grey;
+        return LinearGradient(colors: [Colors.grey, Colors.grey]);
     }
+  }
+
+  Color _getTextColor(String? buttonValue) {
+    if (buttonValue == 'Continue') {
+      return Colors.white;
+    }
+    return Colors.white;
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -50,16 +58,16 @@ class EbookCard extends StatelessWidget {
               children: [
                 ebook.image.isNotEmpty
                     ? CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(ebook.image),
-                      )
+                  radius: 20,
+                  backgroundImage: NetworkImage(ebook.image),
+                )
                     : CircleAvatar(
-                        radius: 20,
-                        child: Text(
-                          ebook.name[0],
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
+                  radius: 20,
+                  child: Text(
+                    ebook.name[0],
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
                 const SizedBox(width: 8.0),
                 Expanded(
                   child: Text(
@@ -78,57 +86,65 @@ class EbookCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   decoration: BoxDecoration(
                     color: ebook.isExpired
                         ? Colors.red
-                          : ebook.status == 1
-                            ? Colors.green
-                              : Colors.orange,
+                        : ebook.status == 1
+                        ? Colors.green
+                        : Colors.orange,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Text(
-                      ebook.isExpired
-                          ? 'Expired'
-                            : ebook.status == 1
-                              ? 'Active'
-                                : 'Pending',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
+                    ebook.isExpired
+                        ? 'Expired'
+                        : ebook.status == 1
+                        ? 'Active'
+                        : 'Pending',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
                 const Spacer(),
                 if (ebook.button != null && ebook.button!.status)
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _getButtonColor(ebook.button!.value),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0, vertical: 8.0),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: _getButtonGradient(ebook.button!.value),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    onPressed: () {
-                      ebook.button!.value == 'Read E-Book'
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EbookDetailPage(
-                                  ebook: ebook.toJson(),
-                                  ebookId: ebook.id
-                                      .toString(), // Pass the required ebookId as a String
-                                ),
-                              ),
-                            )
-                          : _launchURL(ebook.button!.link);
-                    },
-                    child: Text(
-                      ebook.button!.value == 'Renew Softcopy'
-                          ? 'Renew'
-                          : ebook.button!.value == 'Read E-Book'
+                    child: InkWell(
+                      onTap: () {
+                        ebook.button!.value == 'Read E-Book'
+                            ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EbookDetailPage(
+                              ebook: ebook.toJson(),
+                              ebookId: ebook.id.toString(),
+                            ),
+                          ),
+                        )
+                            : _launchURL(ebook.button!.link);
+                      },
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14.0, vertical: 10.0),
+                        child: Text(
+                          ebook.button!.value == 'Renew Softcopy'
+                              ? 'Renew'
+                              : ebook.button!.value == 'Read E-Book'
                               ? 'Read'
                               : ebook.button!.value ?? 'Link',
+                          style: TextStyle(
+                            color: _getTextColor(ebook.button!.value),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
               ],
@@ -137,7 +153,7 @@ class EbookCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Duration:',
                   style: TextStyle(
                     fontSize: 14,
@@ -148,7 +164,7 @@ class EbookCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     ebook.validity ?? 'N/A',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                     ),
                   ),
@@ -158,7 +174,7 @@ class EbookCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Ending:',
                   style: TextStyle(
                     fontSize: 14,
@@ -169,7 +185,7 @@ class EbookCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     ebook.ending ?? 'N/A',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                     ),
                   ),
