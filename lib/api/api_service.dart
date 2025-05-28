@@ -56,4 +56,25 @@ class ApiService {
       throw Exception('Error posting data: $error');
     }
   }
+
+  Future<String> fetchRawTextData(String endpoint) async {
+    try {
+      String? token = await _getToken();
+
+      var headers = {
+        "Content-Type": "application/json",
+        if (token != null) "Authorization": "Bearer $token",
+      };
+
+      final response = await http.get(getFullUrl(endpoint), headers: headers);
+
+      if (response.statusCode == 200) {
+        return response.body.toString();
+      } else {
+        throw Exception("Failed to fetch discussion");
+      }
+    } catch (error) {
+      throw Exception('Error fetching data: $error');
+    }
+  }
 }

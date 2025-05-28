@@ -31,6 +31,9 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
   Map<int, String> selectedAnswers = {};
   Set<int> showCorrect = {};
 
+  String discussionContent = '';
+  bool showDiscussionModal = false;
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +57,23 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
         isLoading = false;
         isError = true;
       });
+    }
+  }
+
+  Future<void> fetchDiscussionContent(String contentId) async {
+    ApiService apiService = ApiService();
+    try {
+      final response = await apiService.fetchRawTextData(
+          "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters/${widget.chapterId}/topics/${widget.topicId}/contents/$contentId/discussion"
+      );
+      setState(() {
+        discussionContent = response;
+        showDiscussionModal = true;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to load discussion"))
+      );
     }
   }
 
@@ -177,63 +197,133 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
     );
   }
 
+  Widget buildDiscussionModal() {
+    if (!showDiscussionModal) return const SizedBox.shrink();
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () {
+              setState(() => showDiscussionModal = false);
+            },
+            child: Container(color: Colors.black.withOpacity(0.5)),
+          ),
+        ),
+        Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.85,
+            height: 400,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text("Discussion",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    ),
+                    IconButton(
+                      onPressed: () => setState(() => showDiscussionModal = false),
+                      icon: const Icon(Icons.close),
+                    )
+                  ],
+                ),
+                const Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Html(
+                      data: discussionContent,
+                      style: {
+                        "body": Style(
+                          fontSize: FontSize.small, // তুমি চাইলে এখানে FontSize(12.0) ও দিতে পারো
+                        ),
+                        "p": Style(
+                          fontSize: FontSize.small,
+                        ),
+                      },
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AppLayout(
-      title: '${widget.ebookName} Questions',
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: ebookContents.length,
-        itemBuilder: (context, index) {
-          final content = ebookContents[index];
-          return Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 2,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  content.type == 3
-                      ? buildImageContent(content.title)
-                      : Html(data: "<b>${content.title}</b>"),
-                  const SizedBox(height: 5),
-                  buildOptionButtons(content),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 8,
+    return Stack(
+      children: [
+        AppLayout(
+          title: '${widget.ebookName} Questions',
+          body: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: ebookContents.length,
+            itemBuilder: (context, index) {
+              final content = ebookContents[index];
+              return Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 2,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildActionButton(
-                        label: "Answer",
-                        onTap: () {
-                          setState(() {
-                            if (showCorrect.contains(content.id)) {
-                              showCorrect.remove(content.id);
-                            } else {
-                              showCorrect.add(content.id);
-                            }
-                          });
-                        },
-                        isActive: showCorrect.contains(content.id),
+                      content.type == 3
+                          ? buildImageContent(content.title)
+                          : Html(data: "<b>${content.title}</b>"),
+                      const SizedBox(height: 5),
+                      buildOptionButtons(content),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 8,
+                        children: [
+                          buildActionButton(
+                            label: "Answer",
+                            onTap: () {
+                              setState(() {
+                                if (showCorrect.contains(content.id)) {
+                                  showCorrect.remove(content.id);
+                                } else {
+                                  showCorrect.add(content.id);
+                                }
+                              });
+                            },
+                            isActive: showCorrect.contains(content.id),
+                          ),
+                          if (content.hasDiscussion)
+                            buildActionButton(
+                              label: "Discussion",
+                              onTap: () => fetchDiscussionContent(content.id.toString()),
+                              isActive: false,
+                            ),
+                          if (content.hasReference)
+                            buildActionButton(label: "Reference", onTap: () {}, isActive: false),
+                          if (content.hasSolveVideo)
+                            buildActionButton(label: "Video", onTap: () {}, isActive: false),
+                        ],
                       ),
-                      if (content.hasDiscussion)
-                        buildActionButton(label: "Discussion", onTap: () {}, isActive: false),
-                      if (content.hasReference)
-                        buildActionButton(label: "Reference", onTap: () {}, isActive: false),
-                      if (content.hasSolveVideo)
-                        buildActionButton(label: "Video", onTap: () {}, isActive: false),
                     ],
                   ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                ),
+              );
+            },
+          ),
+        ),
+        buildDiscussionModal(),
+      ],
     );
   }
 
