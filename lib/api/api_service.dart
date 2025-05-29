@@ -30,30 +30,30 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> postData(String endpoint, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
     try {
       String? token = await _getToken();
-
       var headers = {
         "Content-Type": "application/json",
         if (token != null) "Authorization": "Bearer $token",
       };
-
       String body = json.encode(data);
 
-      final response = await http.post(
-        getFullUrl(endpoint),
-        headers: headers,
-        body: body,
-      );
+      final response = await http.post(getFullUrl(endpoint), headers: headers, body: body);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception('Failed to post data: ${response.statusCode}');
+        return {
+          'error': 1,
+          'message': 'Server Error: ${response.statusCode}'
+        };
       }
     } catch (error) {
-      throw Exception('Error posting data: $error');
+      return {
+        'error': 1,
+        'message': 'Network Error: $error'
+      };
     }
   }
 
