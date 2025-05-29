@@ -349,6 +349,32 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
     );
   }
 
+  // Widget buildImageContent(String htmlString) {
+  //   final RegExp exp = RegExp(r'<img[^>]+src="([^">]+)"');
+  //   final match = exp.firstMatch(htmlString);
+  //   final imageUrl = match?.group(1);
+  //
+  //   if (imageUrl == null) {
+  //     return const Text('Image not found');
+  //   }
+  //
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: [
+  //       Center(
+  //         child: ClipRRect(
+  //           borderRadius: BorderRadius.circular(12),
+  //           child: Image.network(
+  //             imageUrl,
+  //             fit: BoxFit.contain,
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(height: 10),
+  //     ],
+  //   );
+  // }
+
   Widget buildImageContent(String htmlString) {
     final RegExp exp = RegExp(r'<img[^>]+src="([^">]+)"');
     final match = exp.firstMatch(htmlString);
@@ -364,16 +390,14 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
         Center(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.contain,
-            ),
+            child: ImageWithPlaceholder(imageUrl: imageUrl),
           ),
         ),
         const SizedBox(height: 10),
       ],
     );
   }
+
 
   Widget buildDiscussionModal() {
     if (!showDiscussionModal) return const SizedBox.shrink();
@@ -578,3 +602,56 @@ class YoutubePlayerPage extends StatelessWidget {
     );
   }
 }
+
+class ImageWithPlaceholder extends StatefulWidget {
+  final String imageUrl;
+
+  const ImageWithPlaceholder({super.key, required this.imageUrl});
+
+  @override
+  State<ImageWithPlaceholder> createState() => _ImageWithPlaceholderState();
+}
+
+class _ImageWithPlaceholderState extends State<ImageWithPlaceholder> {
+  bool _isLoaded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (!_isLoaded)
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 200, // আপনি চাইলে উচ্চতা পরিবর্তন করতে পারেন
+              width: double.infinity,
+              color: Colors.white,
+            ),
+          ),
+        Image.network(
+          widget.imageUrl,
+          fit: BoxFit.contain,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  setState(() => _isLoaded = true);
+                }
+              });
+              return child;
+            }
+            return Container(); // লোডিং চলাকালীন খালি কন্টেইনার
+          },
+          errorBuilder: (context, error, stackTrace) => const Icon(
+            Icons.broken_image,
+            size: 100,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+}
+

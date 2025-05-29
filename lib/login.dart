@@ -96,13 +96,9 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
-                  const Text(
-                    "Ebook App",
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
+                  Image.asset(
+                    'assets/app-icon.png',
+                    height: 100,
                   ),
                   const SizedBox(height: 30),
                   TextFormField(
