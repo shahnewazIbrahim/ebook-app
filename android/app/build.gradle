@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.medigeneit.ebook_project"
+    namespace = "com.example.ebook_project"
     compileSdk = flutter.compileSdkVersion
 //    ndkVersion = flutter.ndkVersion
     ndkVersion = "27.0.12077973"
