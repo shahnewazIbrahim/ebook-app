@@ -4,6 +4,7 @@ import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/models/ebook_content.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 
 class EbookContentsPage extends StatefulWidget {
   final String ebookId;
@@ -103,6 +104,47 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
           const SnackBar(content: Text("Failed to load videos")));
     }
   }
+
+  Widget buildSkeletonCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(height: 20, width: double.infinity, color: Colors.white),
+              const SizedBox(height: 10),
+              Container(height: 14, width: double.infinity, color: Colors.white),
+              const SizedBox(height: 8),
+              Container(height: 14, width: 200, color: Colors.white),
+              const SizedBox(height: 12),
+              Row(
+                children: List.generate(
+                  3,
+                      (index) => Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    height: 30,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 
   Widget buildVideoModal() {
     if (!showVideoModal) return const SizedBox.shrink();
@@ -422,7 +464,11 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
         AppLayout(
           title: '${widget.ebookName} Questions',
           body: isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: 6,
+                  itemBuilder: (context, index) => buildSkeletonCard(),
+                )
               : ListView.builder(
             padding: const EdgeInsets.all(12),
             itemCount: ebookContents.length,
