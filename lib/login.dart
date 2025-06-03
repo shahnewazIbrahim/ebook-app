@@ -15,45 +15,41 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _showTopSnackBar(String title, String message, {Color bgColor = Colors.red, IconData? icon, Color iconColor = Colors.white}) {
-
+  void _showTopSnackBar(String title, String message, {Color bgColor = Colors.blueAccent, IconData? icon, Color iconColor = Colors.white}) {
     Get.snackbar(
+      title,
+      message,
+      backgroundColor: bgColor,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      borderRadius: 12,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      colorText: Colors.white,
+      icon: icon != null
+          ? Icon(
+        icon,
+        color: iconColor,
+        size: 26,
+      )
+          : null,
+      titleText: Text(
         title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      messageText: Text(
         message,
-        backgroundColor: bgColor,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        icon: icon != null
-            ? Icon(
-          icon,
-          color: iconColor,
-          size: 26,
-        )
-            : null,
+        style: const TextStyle(
+          fontSize: 14,
+          color: Colors.white,
+        ),
+      ),
+      shouldIconPulse: false,
     );
-    // final messenger = ScaffoldMessenger.of(context);
-    // messenger.clearSnackBars();
-    // messenger.showSnackBar(
-    //   SnackBar(
-    //     content: Row(
-    //       children: [
-    //         if (icon != null)
-    //           Icon(icon, color: Colors.white),
-    //         if (icon != null)
-    //           const SizedBox(width: 10),
-    //         Expanded(child: Text(message)),
-    //       ],
-    //     ),
-    //     backgroundColor: bgColor,
-    //     behavior: SnackBarBehavior.floating,
-    //     margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-    //     shape: RoundedRectangleBorder(
-    //       borderRadius: BorderRadius.circular(12),
-    //     ),
-    //     duration: const Duration(seconds: 3),
-    //   ),
-    // );
   }
 
   void _login() async {
