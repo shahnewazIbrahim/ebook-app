@@ -2,6 +2,7 @@ import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,29 +15,45 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _showTopSnackBar(String message, {Color bgColor = Colors.red, IconData? icon}) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.clearSnackBars();
-    messenger.showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            if (icon != null)
-              Icon(icon, color: Colors.white),
-            if (icon != null)
-              const SizedBox(width: 10),
-            Expanded(child: Text(message)),
-          ],
-        ),
+  void _showTopSnackBar(String title, String message, {Color bgColor = Colors.red, IconData? icon, Color iconColor = Colors.white}) {
+
+    Get.snackbar(
+        title,
+        message,
         backgroundColor: bgColor,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),
-      ),
+        icon: icon != null
+            ? Icon(
+          icon,
+          color: iconColor,
+          size: 26,
+        )
+            : null,
     );
+    // final messenger = ScaffoldMessenger.of(context);
+    // messenger.clearSnackBars();
+    // messenger.showSnackBar(
+    //   SnackBar(
+    //     content: Row(
+    //       children: [
+    //         if (icon != null)
+    //           Icon(icon, color: Colors.white),
+    //         if (icon != null)
+    //           const SizedBox(width: 10),
+    //         Expanded(child: Text(message)),
+    //       ],
+    //     ),
+    //     backgroundColor: bgColor,
+    //     behavior: SnackBarBehavior.floating,
+    //     margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+    //     shape: RoundedRectangleBorder(
+    //       borderRadius: BorderRadius.circular(12),
+    //     ),
+    //     duration: const Duration(seconds: 3),
+    //   ),
+    // );
   }
 
   void _login() async {
@@ -45,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
     ApiService apiService = ApiService();
 
     if (!_formKey.currentState!.validate()) {
-      _showTopSnackBar('Invalid input', bgColor: Colors.orange, icon: Icons.warning);
+      _showTopSnackBar('Invalid input', "Check Again", bgColor: Colors.orange, icon: Icons.warning);
       return;
     }
 
@@ -55,12 +72,12 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (loginData == null || loginData is! Map || !loginData.containsKey('error')) {
-      _showTopSnackBar('Unexpected server error');
+      _showTopSnackBar('Unexpected server error', 'Try Again', bgColor: Colors.red, icon: Icons.error);
       return;
     }
 
     if (loginData['error'] > 0) {
-      _showTopSnackBar(loginData['message'] ?? 'Login error');
+      _showTopSnackBar(loginData['message'] ?? 'Login error', 'Try again', bgColor: Colors.red, icon: Icons.error);
       return;
     }
 
@@ -69,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString('token', loginData['token']);
       await prefs.setString('userName', loginData['name']);
 
-      _showTopSnackBar('Login successful!', bgColor: Colors.green, icon: Icons.check_circle);
+      _showTopSnackBar('Login successful!', 'Enjoy your learning..' ,bgColor: Colors.green, icon: Icons.check_circle);
 
       await Future.delayed(const Duration(milliseconds: 500));
 
@@ -78,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => MyHomePage(title: "My Ebooks")),
       );
     } else {
-      _showTopSnackBar('Login failed');
+      _showTopSnackBar('Login failed', 'Something Error', bgColor: Colors.red, icon: Icons.error);
     }
   }
 

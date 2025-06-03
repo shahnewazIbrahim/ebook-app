@@ -89,26 +89,34 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ),
             child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                widget.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              alignment: Alignment.center,
+              // child: Text(
+              //   widget.title,
+              //   style: const TextStyle(
+              //     color: Colors.white,
+              //     fontSize: 24,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                child: Image.asset(
+                  'assets/bm-logo-white.png',
+                  height: 80,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
           ),
           buildDrawerItem(
-            icon: FontAwesomeIcons.user,
-            label: 'User',
-            onTap: widget.onProfileTap,
-          ),
-          buildDrawerItem(
             icon: FontAwesomeIcons.homeAlt,
             label: 'Home',
             onTap: widget.onHomeTap,
+          ),
+          buildDrawerItem(
+            icon: FontAwesomeIcons.user,
+            label: 'User',
+            onTap: widget.onProfileTap,
           ),
           buildDrawerItem(
             icon: FontAwesomeIcons.cog,

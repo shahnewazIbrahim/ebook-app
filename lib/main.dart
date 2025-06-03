@@ -9,6 +9,7 @@ import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/components/ebook_card.dart';
 import 'package:ebook_project/login.dart';
 import 'package:ebook_project/models/ebook.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'My Ebooks',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
