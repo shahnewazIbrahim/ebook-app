@@ -1,5 +1,6 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
+import 'package:ebook_project/components/shimmer_ebook_detail_loader.dart';
 import 'package:ebook_project/ebook_subjects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -51,7 +52,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
       // title: "Ebook Details",
       title: "${widget.ebook['name']} Details",
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ?  const ShimmerEbookDetailLoader()
           : isError
               ? Center(child: Text('Failed to load ebook details'))
               : Padding(

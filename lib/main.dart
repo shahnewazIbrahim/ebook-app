@@ -1,3 +1,4 @@
+import 'package:ebook_project/components/shimmer_ebook_card_loader.dart';
 import 'package:ebook_project/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -82,7 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return AppLayout(
       title: widget.title,
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: ShimmerEbookCardLoader(),
+            )
           : Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView.builder(

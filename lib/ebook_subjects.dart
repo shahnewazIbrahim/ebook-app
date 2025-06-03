@@ -4,6 +4,7 @@ import 'package:ebook_project/ebook_chapters.dart';
 import 'package:ebook_project/models/ebook_subject.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ebook_project/components/shimmer_list_loader.dart';
 
 class EbookSubjectsPage extends StatefulWidget {
   final String ebookId;
@@ -55,7 +56,10 @@ class _EbookSubjectsState extends State<EbookSubjectsPage> {
     return AppLayout(
       title: '${widget.ebookName} Subjects',
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ShimmerListLoader(),
+            )
           : isError
           ? const Center(child: Text('Failed to load subjects'))
           : Padding(

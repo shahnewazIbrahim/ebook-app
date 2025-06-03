@@ -1,5 +1,6 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
+import 'package:ebook_project/components/shimmer_list_loader.dart';
 import 'package:ebook_project/ebook_topics.dart';
 import 'package:ebook_project/models/ebook_chapter.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,10 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
     return AppLayout(
       title: '${widget.ebookName} Chapters',
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ShimmerListLoader(),
+            )
           : isError
           ? const Center(child: Text('Failed to load chapters'))
           : Padding(
