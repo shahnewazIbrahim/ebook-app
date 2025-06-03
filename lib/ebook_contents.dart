@@ -336,6 +336,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       ),
       onPressed: () {
         setState(() {
+          selectedAnswers.clear();
           selectedAnswers[option.id] = isSelected ? '' : option.slNo;
         });
       },
