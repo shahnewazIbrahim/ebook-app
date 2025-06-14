@@ -215,7 +215,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                       separatorBuilder: (_, __) => const Divider(),
                       itemBuilder: (context, index) {
                         final video = solveVideos[index];
-                        final title = video['title'] ?? 'No Title';
+                        final title = "${video['title']} ${index + 1}" ?? 'No Title';
                         final url = video['video_url'];
 
                         final videoId = YoutubePlayer.convertUrlToId(url ?? '');
@@ -446,11 +446,11 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                         style: {
                           "*": Style(
                             backgroundColor: Colors.transparent,
-                            fontSize: FontSize.small,
+                            fontSize: FontSize.medium,
                             color: Colors.black,
                           ),
                           "p": Style(
-                            fontSize: FontSize.small,
+                            fontSize: FontSize.medium,
                             backgroundColor: Colors.transparent,
                             margin: Margins.only(bottom: 6),
                           ),
