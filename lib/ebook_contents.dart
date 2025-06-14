@@ -31,6 +31,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
   bool isLoading = true;
   bool isError = false;
   Map<int, String> selectedAnswers = {};
+  Map<int, String> selectedSBAAnswers = {};
   Set<int> showCorrect = {};
 
   String discussionContent = '';
@@ -254,36 +255,51 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
     );
   }
 
-
   Widget buildOptionButtons(EbookContent content) {
     return Column(
       children: content.options.asMap().entries.map((entry) {
         final option = entry.value;
         final index = entry.key;
-        String answerKey = (index < content.answer.length) ? content.answer[index] : '';
-        String? selected = selectedAnswers[option.id];
-        bool correctShown = showCorrect.contains(content.id);
+        final answerKey = (index < content.answer.length) ? content.answer[index] : '';
+        final bool correctShown = showCorrect.contains(content.id);
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (content.type == 1) ...[
+        if (content.type == 1) {
+          // TF
+          final selected = selectedAnswers[option.id];
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
                 buildTFButton(option, 'T', selected, correctShown, answerKey),
                 const SizedBox(width: 6),
                 buildTFButton(option, 'F', selected, correctShown, answerKey),
+                const SizedBox(width: 10),
+                Expanded(child: Html(data: option.title)),
               ],
-              if (content.type == 2)
-                buildSingleOptionButton(option, selected, correctShown, content.answer),
-              const SizedBox(width: 10),
-              Expanded(child: Html(data: option.title)),
-            ],
-          ),
-        );
+            ),
+          );
+        } else if (content.type == 2) {
+          // MCQ Single Option
+          final selected = selectedSBAAnswers[content.id];
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildSingleOptionButton(option, selected, correctShown, content.answer, content.id),
+                const SizedBox(width: 10),
+                Expanded(child: Html(data: option.title)),
+              ],
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
       }).toList(),
     );
   }
+
 
   Widget buildTFButton(option, String label, String? selected, bool correctShown, String answerKey) {
     final bool isSelected = selected == label;
@@ -317,7 +333,8 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
     );
   }
 
-  Widget buildSingleOptionButton(option, String? selected, bool correctShown, String answer) {
+
+  Widget buildSingleOptionButton(option, String? selected, bool correctShown, String answer, contentId) {
     final bool isSelected = selected == option.slNo;
     final bool isCorrect = option.slNo == answer;
 
@@ -336,8 +353,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       ),
       onPressed: () {
         setState(() {
-          selectedAnswers.clear();
-          selectedAnswers[option.id] = isSelected ? '' : option.slNo;
+          selectedSBAAnswers[contentId] = isSelected ? '' : option.slNo;
         });
       },
       child: Text(
@@ -349,32 +365,6 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       ),
     );
   }
-
-  // Widget buildImageContent(String htmlString) {
-  //   final RegExp exp = RegExp(r'<img[^>]+src="([^">]+)"');
-  //   final match = exp.firstMatch(htmlString);
-  //   final imageUrl = match?.group(1);
-  //
-  //   if (imageUrl == null) {
-  //     return const Text('Image not found');
-  //   }
-  //
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     children: [
-  //       Center(
-  //         child: ClipRRect(
-  //           borderRadius: BorderRadius.circular(12),
-  //           child: Image.network(
-  //             imageUrl,
-  //             fit: BoxFit.contain,
-  //           ),
-  //         ),
-  //       ),
-  //       const SizedBox(height: 10),
-  //     ],
-  //   );
-  // }
 
   Widget buildImageContent(String htmlString) {
     final RegExp exp = RegExp(r'<img[^>]+src="([^">]+)"');
@@ -480,7 +470,6 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       ],
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
