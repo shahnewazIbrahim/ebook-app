@@ -1,3 +1,4 @@
+import 'package:ebook_project/components/under_maintanance_snackbar.dart';
 import 'package:ebook_project/ebook_detail.dart';
 import 'package:ebook_project/models/ebook.dart';
 import 'package:flutter/material.dart';
@@ -130,19 +131,7 @@ class EbookCard extends StatelessWidget {
                         )
                             : 
                         // _launchURL(ebook.button!.link)
-                        Get.snackbar(
-                          "ℹ️ Under Maintenance",
-                          "Please wait for the next update.",
-                          backgroundColor: Colors.blue.shade100,
-                          colorText: Colors.black87,
-                          snackPosition: SnackPosition.TOP,
-                          duration: const Duration(seconds: 4),
-                          icon: const Icon(Icons.info_outline, color: Colors.blue, size: 28),
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                          borderRadius: 12,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          shouldIconPulse: false,
-                        );
+                        showUnderMaintenanceSnackbar()
                         ;
                       },
                       borderRadius: BorderRadius.circular(8.0),

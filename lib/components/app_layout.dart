@@ -1,5 +1,8 @@
+import 'package:ebook_project/components/under_maintanance_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'custom_drawer.dart';
+import 'package:get/get.dart';
+
 
 class AppLayout extends StatelessWidget {
   final String title;
@@ -78,7 +81,8 @@ class AppLayout extends StatelessWidget {
               Navigator.pushNamed(context, '/home');
               break;
             case 1:
-              Navigator.pushNamed(context, '/ebooks');
+              // Navigator.pushNamed(context, '/ebooks');
+              showUnderMaintenanceSnackbar()
               break;
             case 2:
               Navigator.pushNamed(context, '/user');

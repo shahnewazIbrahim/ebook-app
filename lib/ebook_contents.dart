@@ -5,6 +5,7 @@ import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/models/ebook_content.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class EbookContentsPage extends StatefulWidget {
   final String ebookId;
@@ -33,6 +34,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
   Map<int, String> selectedAnswers = {};
   Map<int, String> selectedSBAAnswers = {};
   Set<int> showCorrect = {};
+  bool showModalLoader = false;
 
   String discussionContent = '';
   bool showDiscussionModal = false;
@@ -67,6 +69,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
   }
 
   Future<void> fetchDiscussionContent(String contentId) async {
+    setState(() => showModalLoader = true);
     ApiService apiService = ApiService();
     try {
       final response = await apiService.fetchRawTextData(
@@ -75,8 +78,10 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
       setState(() {
         discussionContent = response;
         showDiscussionModal = true;
+        showModalLoader = false;
       });
     } catch (e) {
+      setState(() => showModalLoader = false);
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Failed to load discussion"))
       );
@@ -84,6 +89,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
   }
 
   Future<void> fetchSolveVideos(String contentId) async {
+    setState(() => showModalLoader = true);
     ApiService apiService = ApiService();
     try {
       final data = await apiService.fetchEbookData(
@@ -99,8 +105,10 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
 
       setState(() {
         showVideoModal = true;
+        showModalLoader = false;
       });
     } catch (e) {
+      setState(() => showModalLoader = false);
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Failed to load videos")));
     }
@@ -143,6 +151,24 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildModalLoader() {
+    if (!showModalLoader) return const SizedBox.shrink();
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Container(color: Colors.black.withOpacity(0.3)),
+        ),
+        Center(
+            child: LoadingAnimationWidget.fourRotatingDots(
+              color: Colors.white,
+              size: 50,
+            ),
+        ),
+      ],
     );
   }
 
@@ -523,15 +549,19 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
                           if (content.hasDiscussion)
                             buildActionButton(
                               label: "Discussion",
-                              onTap: () =>
-                                  fetchDiscussionContent(content.id.toString()),
+                              onTap: () => {
+                                setState(() => showModalLoader = true),
+                                fetchDiscussionContent(content.id.toString()),
+                              },
                               isActive: false,
                             ),
                           if (content.hasSolveVideo)
                             buildActionButton(
                               label: "Video",
-                              onTap: () =>
-                                  fetchSolveVideos(content.id.toString()),
+                              onTap: () => {
+                                setState(() => showModalLoader = true),
+                                fetchSolveVideos(content.id.toString()),
+                              },
                               isActive: false,
                             ),
                         ],
@@ -545,6 +575,7 @@ class _EbookContentsPageState extends State<EbookContentsPage> {
         ),
         buildDiscussionModal(),
         buildVideoModal(),
+        buildModalLoader(),
       ],
     );
   }
