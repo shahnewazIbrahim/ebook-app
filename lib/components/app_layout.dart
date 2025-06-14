@@ -82,10 +82,10 @@ class AppLayout extends StatelessWidget {
               break;
             case 1:
               // Navigator.pushNamed(context, '/ebooks');
-              showUnderMaintenanceSnackbar()
+              showUnderMaintenanceSnackbar();
               break;
             case 2:
-              Navigator.pushNamed(context, '/user');
+              Navigator.pushNamed(context, '/profile');
               break;
           }
         },
