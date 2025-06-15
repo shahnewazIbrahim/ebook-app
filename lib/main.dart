@@ -1,6 +1,7 @@
 import 'package:ebook_project/components/shimmer_ebook_card_loader.dart';
 import 'package:ebook_project/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ebook_project/api/api_service.dart';
@@ -44,6 +45,25 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Method to check for update
+Future<void> _checkForUpdate() async {
+  // Check for available update
+
+  InAppUpdate.checkForUpdate().then((info) {
+    if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+      // If update is available, start the update flow
+      _performUpdate();
+    }
+  });
+}
+
+// Method to perform update
+Future<void> _performUpdate() async {
+  InAppUpdate.performImmediateUpdate().catchError((e) {
+    print("Update failed: $e");
+  });
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
@@ -59,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    _checkForUpdate();
     super.initState();
     fetchEbooks();
   }
