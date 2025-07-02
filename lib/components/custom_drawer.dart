@@ -74,6 +74,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    String? currentRoute = ModalRoute.of(context)?.settings.name;
     return Drawer(
       child: Column(
         children: [
@@ -108,16 +109,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ),
           ),
-          buildDrawerItem(
-            icon: FontAwesomeIcons.homeAlt,
-            label: 'Home',
-            onTap: widget.onHomeTap,
-          ),
-          buildDrawerItem(
-            icon: FontAwesomeIcons.user,
-            label: 'User',
-            onTap: widget.onProfileTap,
-          ),
+          // if(currentRoute != '/')
+            buildDrawerItem(
+              icon: FontAwesomeIcons.homeAlt,
+              label: 'Home',
+              onTap: currentRoute != '/' ? widget.onHomeTap : () {},
+              route : '/'
+            ),
+          // if(currentRoute != '/profile')
+            buildDrawerItem(
+              icon: FontAwesomeIcons.user,
+              label: 'User',
+              onTap: currentRoute != '/profile' ? widget.onProfileTap : () {},
+              route : '/profile'
+            ),
           buildDrawerItem(
             icon: FontAwesomeIcons.cog,
             label: 'Settings',
@@ -128,6 +133,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               icon: FontAwesomeIcons.signInAlt,
               label: 'Login',
               onTap: widget.onLoginTap,
+
             ),
           if (isLoggedIn)
             buildDrawerItem(
@@ -144,18 +150,31 @@ class _CustomDrawerState extends State<CustomDrawer> {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    String? route
   }) {
+    String? currentRoute = ModalRoute.of(context)?.settings.name;
+    bool isSelected = (route != null && route == currentRoute);
     return ListTile(
-      leading: Icon(icon, size: 20, color: Colors.blue[700]),
+      leading: Icon(
+          icon,
+          size: 20,
+          // color: Colors.blue[700]
+          color: isSelected ? Colors.white : Colors.blue[700],
+      ),
       title: Text(
         label,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        style:  TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: isSelected ? Colors.white : Colors.black,
+        ),
       ),
       horizontalTitleGap: 8,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
+      tileColor: isSelected ? Colors.blue[700] : null,
       onTap: onTap,
     );
   }

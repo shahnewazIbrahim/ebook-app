@@ -48,7 +48,7 @@ class AppLayout extends StatelessWidget {
           Navigator.pushNamed(context, '/login');
         },
         onHomeTap: () {
-          Navigator.pushNamed(context, '/home');
+          Navigator.pushNamed(context, '/');
         },
         onSettingsTap: () {
           Navigator.pushNamed(context, '/settings');
@@ -78,7 +78,7 @@ class AppLayout extends StatelessWidget {
         onDestinationSelected: (int index) {
           switch (index) {
             case 0:
-              Navigator.pushNamed(context, '/home');
+              Navigator.pushNamed(context, '/');
               break;
             case 1:
               // Navigator.pushNamed(context, '/ebooks');
