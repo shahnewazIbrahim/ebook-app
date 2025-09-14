@@ -1,5 +1,6 @@
 import 'package:ebook_project/components/shimmer_ebook_card_loader.dart';
 import 'package:ebook_project/profile.dart';
+import 'package:ebook_project/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,10 +31,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'My Ebooks',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0EA5E9)),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0EA5E9)),
+      //   useMaterial3: true,
+      // ),
       initialRoute: initialRoute,
       routes: {
         '/': (context) => MyHomePage(title: 'My Ebooks'),
