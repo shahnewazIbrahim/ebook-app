@@ -78,12 +78,14 @@ class AppColors {
       status == 'Active' ? cardTintEmerald : cardTintRose;
 
   static const List<List<Color>> cardGradientSets = [
-    [Color(0xFF3B82F6), Color(0xFF6366F1)], // blue → indigo
-    [Color(0xFF10B981), Color(0xFF14B8A6)], // emerald → teal
-    [Color(0xFFF59E0B), Color(0xFFF97316)], // amber → orange
-    [Color(0xFF8B5CF6), Color(0xFFEC4899)], // violet → pink
-    [Color(0xFF06B6D4), Color(0xFF3B82F6)], // cyan → blue
-    [Color(0xFF22C55E), Color(0xFF16A34A)], // green shades
+    [Color(0xFF2563EB), Color(0xFF1E40AF)], // blue → blue-800
+    [Color(0xFF4F46E5), Color(0xFF4338CA)], // indigo-600 → indigo-700
+    [Color(0xFF059669), Color(0xFF047857)], // emerald-600 → 700
+    [Color(0xFF0891B2), Color(0xFF0E7490)], // cyan-600 → 700
+    [Color(0xFFD97706), Color(0xFFB45309)], // amber-600 → 700
+    [Color(0xFF7C3AED), Color(0xFF6D28D9)], // violet-600 → 700
+    [Color(0xFFDB2777), Color(0xFFBE185D)], // pink-600 → 700
+    [Color(0xFF16A34A), Color(0xFF166534)], // green-600 → 800
   ];
 
   static List<Color> cardGradientByIndex(int i) =>
@@ -96,4 +98,110 @@ class AppColors {
 // Chips (on gradient)
   static const Color chipOnGradientBg = Color(0x33FFFFFF); // 20% white
   static const Color chipOnGradientBorder = Color(0x66FFFFFF); // 40% white
+
+  static LinearGradient _glassyPair(List<Color> pair, double opacity) {
+    final c1 = pair[0];
+    final c2 = pair[1];
+    final mid =
+        Color.lerp(c1, Colors.white, .08)!; // লাইট মিক্স (রিডেবিলিটি বজায়)
+    return LinearGradient(
+      colors: [
+        c1.withOpacity(opacity),
+        mid.withOpacity(opacity),
+        c2.withOpacity(opacity),
+      ],
+      stops: const [0.0, 0.55, 1.0],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+  }
+
+  /// 🔵 ডিফল্ট (unknown/fallback)
+  static const List<Color> _gDefault = [
+    Color(0xFF2563EB),
+    Color(0xFF1E40AF)
+  ]; // blue 600→800
+  /// ✅ Active
+  static const List<Color> _gActive = [
+    Color(0xFF059669),
+    Color(0xFF047857)
+  ]; // emerald 600→700
+  /// ❌ Expired
+  static const List<Color> _gExpired = [
+    Color(0xFFDB2777),
+    Color(0xFFBE185D)
+  ]; // pink 600→700
+  /// ⏳ Pending
+  static const List<Color> _gPending = [
+    Color(0xFFD97706),
+    Color(0xFFB45309)
+  ]; // amber 600→700
+
+  /// 🎨 স্ট্যাটাস টেক্সট (Active/Expired/Pending) অনুযায়ী glassy gradient
+  static LinearGradient glassyGradientByStatus(String status,
+      {double opacity = 1.0}) {
+    final s = status.trim().toLowerCase();
+    if (s == 'active') return _glassyPair(_gActive, opacity);
+    if (s == 'expired') return _glassyPair(_gExpired, opacity);
+    if (s == 'pending') return _glassyPair(_gPending, opacity);
+    return _glassyPair(_gDefault, opacity);
+  }
+
+  /// 🧠 ইবুক ফ্ল্যাগ দিয়ে নির্ধারণ (আরও রোবাস্ট)
+  /// - `isExpired == true` হলে সরাসরি Expired
+  /// - নাহলে `statusText` (Active/Pending/Expired) প্রাধান্য
+  /// - নাহলে `status == 1` হলে Active, অন্যথায় Pending
+  static LinearGradient glassyGradientForEbook({
+    bool? isExpired,
+    int? status,
+    String? statusText,
+    double opacity = 1.0,
+  }) {
+    if (isExpired == true) {
+      return _glassyPair(_gExpired, opacity);
+    }
+    if (statusText != null && statusText.trim().isNotEmpty) {
+      return glassyGradientByStatus(statusText, opacity: opacity);
+    }
+    if (status == 1) return _glassyPair(_gActive, opacity);
+    if (status == 0) return _glassyPair(_gPending, opacity);
+    return _glassyPair(_gDefault, opacity);
+  }
+
+  static LinearGradient glassyGradientByIndex(int i, {double opacity = 1.0}) {
+    final g = cardGradientSets[i % cardGradientSets.length];
+    final c1 = g.first;
+    final c2 = g.last;
+    final mid = Color.lerp(c1, Colors.white, .08)!; // আগে .22 ছিল, এখন .08
+    return LinearGradient(
+      colors: [
+        c1.withOpacity(opacity),
+        mid.withOpacity(opacity),
+        c2.withOpacity(opacity)
+      ],
+      stops: const [0.0, 0.55, 1.0],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+  }
+
+  /// ডায়াগোনাল শাইন (টপ-লেফট → বটম-রাইট)
+  static const LinearGradient glassShineDiagonal = LinearGradient(
+    colors: [Color(0x1FFFFFFF), Color(0x00FFFFFF)],
+    stops: [0.0, 1.0],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  /// টপ-লেফট গ্লেয়ার (র্যাডিয়াল হাইলাইট)
+  static const RadialGradient glassGleamTL = RadialGradient(
+    colors: [Color(0x33FFFFFF), Color(0x00FFFFFF)],
+    radius: 0.85,
+    center: Alignment(-0.9, -0.9),
+  );
+
+  /// শ্যাডো একটু নরম + রিম হালকা হাইলাইট
+  static const List<BoxShadow> glassShadow = [
+    BoxShadow(color: Color(0x33000000), blurRadius: 18, offset: Offset(0, 10)),
+  ];
 }
