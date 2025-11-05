@@ -102,7 +102,7 @@ class AppLayout extends StatelessWidget {
           ? CustomDrawer(
         title: 'My Ebooks',
         onLoginTap:   () => Navigator.pushNamed(context, '/login'),
-        onHomeTap:    () => Navigator.pushNamed(context, '/'),
+        onHomeTap:    () => Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
         onSettingsTap:() => Navigator.pushNamed(context, '/settings'),
         onProfileTap: () => Navigator.pushNamed(context, '/profile'),
       )

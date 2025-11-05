@@ -40,9 +40,8 @@ class _SplashPageState extends State<SplashPage>
     final token = prefs.getString('token');
 
     if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed(
-      (token == null || token.isEmpty) ? '/login' : '/',
-    );
+    Navigator.of(context).pushNamedAndRemoveUntil(
+        (token == null || token.isEmpty) ? '/login' : '/', (route) => false);
   }
 
   @override
@@ -62,9 +61,24 @@ class _SplashPageState extends State<SplashPage>
           const _SoftGradientBg(),
 
           // Subtle blurred blobs
-          const _BlurBlob(top: -80, left: -40, size: 220, color: Color(0xFF38BDF8), opacity: .30),
-          const _BlurBlob(bottom: -60, right: -50, size: 200, color: Color(0xFFA78BFA), opacity: .28),
-          const _BlurBlob(top: 120, right: -40, size: 160, color: Color(0xFF34D399), opacity: .24),
+          const _BlurBlob(
+              top: -80,
+              left: -40,
+              size: 220,
+              color: Color(0xFF38BDF8),
+              opacity: .30),
+          const _BlurBlob(
+              bottom: -60,
+              right: -50,
+              size: 200,
+              color: Color(0xFFA78BFA),
+              opacity: .28),
+          const _BlurBlob(
+              top: 120,
+              right: -40,
+              size: 160,
+              color: Color(0xFF34D399),
+              opacity: .24),
 
           // Center: logo + app name
           Center(
@@ -107,7 +121,8 @@ class _SplashPageState extends State<SplashPage>
                                 colors: [Color(0xFF38BDF8), Color(0xFFA78BFA)],
                               ),
                             ),
-                            child: const Icon(Icons.menu_book_rounded, size: 40, color: Colors.white),
+                            child: const Icon(Icons.menu_book_rounded,
+                                size: 40, color: Colors.white),
                           ),
                         ),
                       ),
