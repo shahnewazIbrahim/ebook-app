@@ -1,16 +1,16 @@
-import 'package:ebook_project/profile.dart';
+import 'package:ebook_project/screens/profile.dart';
 import 'package:ebook_project/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:in_app_update/in_app_update.dart';
 
-import 'api/api_service.dart';
-import 'api/routes.dart';
-import 'components/app_layout.dart';
-import 'components/ebook_card.dart';
-import 'components/shimmer_ebook_card_loader.dart';
+import '../api/api_service.dart';
+import '../api/routes.dart';
+import '../components/app_layout.dart';
+import '../components/ebook_card.dart';
+import '../components/shimmer_ebook_card_loader.dart';
 import 'login.dart';
-import 'models/ebook.dart';
+import '../models/ebook.dart';
 
 class MyApp extends StatelessWidget {
   final String initialRoute;

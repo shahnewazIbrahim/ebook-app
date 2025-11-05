@@ -1,5 +1,5 @@
 import 'package:ebook_project/components/under_maintanance_snackbar.dart';
-import 'package:ebook_project/ebook_detail.dart';
+import 'package:ebook_project/screens/ebook_detail.dart';
 import 'package:ebook_project/models/ebook.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

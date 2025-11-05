@@ -1,78 +1,73 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
-import 'package:ebook_project/components/shimmer_list_loader.dart';
-import 'package:ebook_project/ebook_contents.dart';
-import 'package:ebook_project/models/ebook_topic.dart';
+import 'package:ebook_project/screens/ebook_chapters.dart';
+import 'package:ebook_project/models/ebook_subject.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ebook_project/components/shimmer_list_loader.dart';
 
-class EbookTopicsPage extends StatefulWidget {
+class EbookSubjectsPage extends StatefulWidget {
   final String ebookId;
-  final String subjectId;
-  final String chapterId;
   final String ebookName;
 
-  const EbookTopicsPage({
+  const EbookSubjectsPage({
     super.key,
     required this.ebookId,
-    required this.subjectId,
-    required this.chapterId,
     required this.ebookName,
   });
 
   @override
-  _EbookTopicsState createState() => _EbookTopicsState();
+  _EbookSubjectsState createState() => _EbookSubjectsState();
 }
 
-class _EbookTopicsState extends State<EbookTopicsPage> {
-  List<EbookTopic> ebookTopics = [];
+class _EbookSubjectsState extends State<EbookSubjectsPage> {
+  List<EbookSubject> ebookSubjects = [];
   bool isLoading = true;
   bool isError = false;
 
   @override
   void initState() {
     super.initState();
-    fetchEbookTopics();
+    fetchEbookSubjects();
   }
 
-  Future<void> fetchEbookTopics() async {
+  Future<void> fetchEbookSubjects() async {
     ApiService apiService = ApiService();
     try {
-      final data = await apiService.fetchEbookData(
-        "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters/${widget.chapterId}/topics",
-      );
+      final data =
+      await apiService.fetchEbookData("/v1/ebooks/${widget.ebookId}/subjects");
       setState(() {
-        ebookTopics = (data['topics'] as List)
-            .map((topicJson) => EbookTopic.fromJson(topicJson))
+        ebookSubjects = (data['subjects'] as List)
+            .map((subjectJson) => EbookSubject.fromJson(subjectJson))
             .toList();
         isLoading = false;
       });
     } catch (error) {
       setState(() {
-        isLoading = false;
         isError = true;
+        isLoading = false;
       });
-      print("Error fetching ebook topics: $error");
+      print("Error fetching ebook subjects: $error");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return AppLayout(
-      title: '${widget.ebookName} Topics',
+      title: '${widget.ebookName} Subjects',
       body: isLoading
           ? Padding(
               padding: const EdgeInsets.all(12.0),
               child: ShimmerListLoader(),
             )
           : isError
-          ? const Center(child: Text('Failed to load topics'))
+          ? const Center(child: Text('Failed to load subjects'))
           : Padding(
         padding: const EdgeInsets.all(12.0),
-        child: ebookTopics.isEmpty
+        child: ebookSubjects.isEmpty
             ? const Center(
           child: Text(
-            'No Topics Available',
+            'No Subjects Available',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -80,11 +75,11 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
           ),
         )
             : ListView.builder(
-          itemCount: ebookTopics.length,
+          itemCount: ebookSubjects.length,
           itemBuilder: (context, index) {
-            final topic = ebookTopics[index];
+            final subject = ebookSubjects[index];
 
-            if (topic.title.isEmpty) {
+            if (subject.title.isEmpty) {
               return const SizedBox.shrink();
             }
 
@@ -93,19 +88,16 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EbookContentsPage(
+                    builder: (context) => EbookChaptersPage(
                       ebookId: widget.ebookId,
-                      subjectId: widget.subjectId,
-                      chapterId: widget.chapterId,
-                      topicId: topic.id.toString(),
+                      subjectId: subject.id.toString(),
                       ebookName: widget.ebookName,
                     ),
                   ),
                 );
               },
               child: Container(
-                margin:
-                const EdgeInsets.symmetric(vertical: 8.0),
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFe0f2fe), Color(0xFFbae6fd)],
@@ -118,7 +110,7 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
                       color: Colors.black12,
                       blurRadius: 4,
                       offset: Offset(0, 2),
-                    ),
+                    )
                   ],
                 ),
                 padding: const EdgeInsets.all(14.0),
@@ -141,7 +133,7 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
                     const SizedBox(width: 14.0),
                     Expanded(
                       child: Text(
-                        topic.title,
+                        subject.title,
                         style: const TextStyle(
                           fontSize: 16.5,
                           fontWeight: FontWeight.w600,

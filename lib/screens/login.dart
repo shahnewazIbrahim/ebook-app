@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:ebook_project/api/api_service.dart';
-import 'package:ebook_project/app.dart';
+import 'package:ebook_project/screens/app.dart';
 import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/main.dart';
 import 'package:ebook_project/theme/app_colors.dart';
