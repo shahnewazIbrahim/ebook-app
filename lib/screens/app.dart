@@ -1,3 +1,4 @@
+import 'package:ebook_project/components/ebook_grid.dart';
 import 'package:ebook_project/screens/profile.dart';
 import 'package:ebook_project/screens/splash.dart';
 import 'package:ebook_project/theme/app_theme.dart';
@@ -105,21 +106,34 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return AppLayout(
       title: widget.title,
-      body: isLoading
-          ? const Padding(
+      // body: isLoading
+      //     ? const Padding(
+      //         padding: EdgeInsets.all(8.0),
+      //         child: ShimmerEbookCardLoader(),
+      //       )
+      //     : Padding(
+      //         padding: const EdgeInsets.all(8.0),
+      //         child: ListView.builder(
+      //           itemCount: ebooks.length,
+      //           padding: const EdgeInsets.all(8.0),
+      //           itemBuilder: (context, index) {
+      //             return EbookCard(ebook: ebooks[index]);
+      //           },
+      //         ),
+      //       ),
+
+      body:  isLoading
+            ? const Padding(
               padding: EdgeInsets.all(8.0),
               child: ShimmerEbookCardLoader(),
             )
           : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.builder(
-                itemCount: ebooks.length,
-                padding: const EdgeInsets.all(8.0),
-                itemBuilder: (context, index) {
-                  return EbookCard(ebook: ebooks[index]);
-                },
-              ),
-            ),
+        padding: const EdgeInsets.all(8.0),
+        child: EbookGrid(
+          ebooks: ebooks,
+          isLoading: isLoading,
+        ),
+      ),
     );
   }
 }
