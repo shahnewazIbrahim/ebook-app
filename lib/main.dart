@@ -9,6 +9,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
 
-  runApp(MyApp(initialRoute: token == null ? '/login' : '/'));
+  // runApp(MyApp(initialRoute: token == null ? '/login' : '/'));
+  runApp(MyApp(initialRoute: '/splash'));
 }
 

@@ -1,4 +1,5 @@
 import 'package:ebook_project/screens/profile.dart';
+import 'package:ebook_project/screens/splash.dart';
 import 'package:ebook_project/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -28,11 +29,18 @@ class MyApp extends StatelessWidget {
       //   useMaterial3: true,
       // ),
       initialRoute: initialRoute,
+      // routes: {
+      //   '/': (context) => MyHomePage(title: 'My Ebooks'),
+      //   '/login': (context) => LoginPage(),
+      //   '/profile': (context) => ProfilePage(),
+      // },
       routes: {
-        '/': (context) => MyHomePage(title: 'My Ebooks'),
-        '/login': (context) => LoginPage(),
-        '/profile': (context) => ProfilePage(),
+        '/splash': (context) => const SplashPage(),
+        '/': (context) => const MyHomePage(title: 'My Ebooks'),
+        '/login': (context) => const LoginPage(),
+        '/profile': (context) => const ProfilePage(),
       },
+
     );
   }
 }
