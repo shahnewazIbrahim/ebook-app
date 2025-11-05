@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:ebook_project/api/api_service.dart';
+import 'package:ebook_project/app.dart';
 import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/main.dart';
 import 'package:ebook_project/theme/app_colors.dart';
@@ -32,7 +33,8 @@ class _LoginPageState extends State<LoginPage> {
   void _snack(String title, String message,
       {Color bgColor = AppColors.primary, IconData? icon}) {
     Get.snackbar(
-      title, message,
+      title,
+      message,
       snackPosition: SnackPosition.TOP,
       backgroundColor: bgColor,
       colorText: Colors.white,
@@ -45,10 +47,14 @@ class _LoginPageState extends State<LoginPage> {
       messageText: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+          Text(title,
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white)),
           const SizedBox(height: 4),
-          Text(message, style: const TextStyle(fontSize: 14, color: Colors.white)),
+          Text(message,
+              style: const TextStyle(fontSize: 14, color: Colors.white)),
         ],
       ),
     );
@@ -78,26 +84,28 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      final Map<String, dynamic> data =
-      (raw is Map) ? Map<String, dynamic>.from(raw as Map) : <String, dynamic>{};
+      final Map<String, dynamic> data = (raw is Map)
+          ? Map<String, dynamic>.from(raw as Map)
+          : <String, dynamic>{};
 
       final errVal = data['error'];
       final int error = (errVal is int)
           ? errVal
           : (errVal is bool)
-          ? (errVal ? 1 : 0)
-          : (errVal is String)
-          ? (int.tryParse(errVal) ?? 0)
-          : 0;
+              ? (errVal ? 1 : 0)
+              : (errVal is String)
+                  ? (int.tryParse(errVal) ?? 0)
+                  : 0;
 
       if (error > 0) {
-        _snack('Login Failed', (data['message'] ?? 'Please try again.').toString(),
+        _snack(
+            'Login Failed', (data['message'] ?? 'Please try again.').toString(),
             bgColor: AppColors.danger, icon: Icons.error_outline);
         return;
       }
 
       final token = data['token']?.toString();
-      final name  = data['name']?.toString() ?? 'User';
+      final name = data['name']?.toString() ?? 'User';
 
       if (token == null || token.isEmpty) {
         _snack('Token Missing', 'Unable to proceed.',
@@ -162,7 +170,8 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: context.gapM),
                 Text("Welcome back!", style: t.displaySmall),
                 const SizedBox(height: 6),
-                Text("Sign in to your account", style: t.bodyLarge, textAlign: TextAlign.center),
+                Text("Sign in to your account",
+                    style: t.bodyLarge, textAlign: TextAlign.center),
                 SizedBox(height: context.gapL),
 
                 TextFormField(
@@ -174,7 +183,8 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Username is required' : null,
+                      ? 'Username is required'
+                      : null,
                 ),
                 SizedBox(height: context.gapM),
 
@@ -193,8 +203,8 @@ class _LoginPageState extends State<LoginPage> {
                           : Icons.visibility_off_outlined),
                     ),
                   ),
-                  validator: (v) => (v == null || v.isEmpty)
-                      ? 'Password is required' : null,
+                  validator: (v) =>
+                      (v == null || v.isEmpty) ? 'Password is required' : null,
                 ),
                 SizedBox(height: context.gapL),
 
@@ -204,9 +214,10 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: _loading ? null : _login,
                     child: _loading
                         ? const SizedBox(
-                      height: 22, width: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : const Text('Sign in'),
                   ),
                 ),
@@ -218,7 +229,8 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: _loading
                           ? null
-                          : () => Navigator.pushNamed(context, '/forgot-password'),
+                          : () =>
+                              Navigator.pushNamed(context, '/forgot-password'),
                       child: const Text("Forgot password?"),
                     ),
                     const SizedBox(width: 12),
@@ -272,7 +284,8 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.menu_book_rounded, size: 56, color: Colors.black54),
+                const Icon(Icons.menu_book_rounded,
+                    size: 56, color: Colors.black54),
                 const SizedBox(height: 16),
                 Text("All your ebooks,\norganized beautifully.",
                     style: t.displaySmall),
@@ -302,27 +315,33 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           // Soft blobs (background)
           Positioned(
-            top: -40, left: -30,
+            top: -40,
+            left: -30,
             child: Container(
-              width: 200, height: 200,
+              width: 200,
+              height: 200,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [AppColors.headerTintA, AppColors.headerTintB],
-                  begin: Alignment.topLeft, end: Alignment.bottomRight,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
             ),
           ),
           Positioned(
-            bottom: -60, right: -40,
+            bottom: -60,
+            right: -40,
             child: Container(
-              width: 260, height: 260,
+              width: 260,
+              height: 260,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [AppColors.headerTintB, AppColors.headerTintA],
-                  begin: Alignment.topRight, end: Alignment.bottomLeft,
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
                 ),
               ),
             ),
@@ -341,7 +360,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: LayoutBuilder(
                   builder: (ctx, constraints) {
                     // tablet/desktop = 2 columns
-                    if (ResponsiveContext(ctx).isTablet || ResponsiveContext(ctx).isDesktop) {
+                    if (ResponsiveContext(ctx).isTablet ||
+                        ResponsiveContext(ctx).isDesktop) {
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
