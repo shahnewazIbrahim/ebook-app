@@ -204,4 +204,28 @@ class AppColors {
   static const List<BoxShadow> glassShadow = [
     BoxShadow(color: Color(0x33000000), blurRadius: 18, offset: Offset(0, 10)),
   ];
+
+  static const Color blue600 = Color(0xFF2563EB); // Colors.blue.shade600
+  static const Color blue800 = Color(0xFF1E40AF); // Colors.blue.shade800
+
+  static final Color blueShade600 = Colors.blue.shade600; // Colors.blue.shade800
+  static final Color blueShade800 = Colors.blue.shade800; // Colors.blue.shade800
+
+// Inactive icon color
+  static const Color slate500 = Color(0xFF64748B); // Colors.slate.shade500
+
+// Convenience (if not already declared in your file)
+  static const Color white = Colors.white;
+  static const Color transparent = Colors.transparent;
+
+// NavigationBar indicator → Colors.blue.shade600.withOpacity(0.12)
+// 0.12 * 255 ≈ 0x1F
+  static const Color navIndicatorBlue600_12 = Color(0x1F2563EB);
+
+// Optional helper: the same gradient used in app_layout.dart
+  static LinearGradient primaryGradient() => const LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [blue600, blue800],
+  );
 }

@@ -1,4 +1,5 @@
 // lib/components/app_layout.dart
+import 'package:ebook_project/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ebook_project/components/under_maintanance_snackbar.dart';
@@ -11,8 +12,8 @@ LinearGradient appPrimaryGradient() => LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
   colors: [
-    Colors.blue.shade600,
-    Colors.blue.shade800,
+    AppColors.blueShade600,
+    AppColors.blueShade800,
   ],
 );
 
@@ -35,7 +36,7 @@ class GradientIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!active) {
       // Inactive → neutral/slate tone
-      return Icon(icon, size: size, color: const Color(0xFF64748B)); // slate-500
+      return Icon(icon, size: size, color: AppColors.slate500); // slate-500
     }
     // Active → gradient fill
     return ShaderMask(
@@ -124,7 +125,7 @@ class AppLayout extends StatelessWidget {
         backgroundColor: Colors.transparent, // surface-এ মিশে যায়
         height: 64,
         elevation: 0,
-        indicatorColor: Colors.blue.shade600.withOpacity(0.12), // subtle
+        indicatorColor: AppColors.blueShade600.withOpacity(0.12), // subtle
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         selectedIndex: selected,
         onDestinationSelected: (index) {
