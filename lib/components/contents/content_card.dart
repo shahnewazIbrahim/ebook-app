@@ -92,13 +92,22 @@ class OptionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 1) options সবসময় A→B→C→D→E ক্রমে সাজাও
+    final opts = [...content.options]
+      ..sort((a, b) => (a.slNo ?? '').compareTo(b.slNo ?? ''));
+
+    // 2) answer স্ট্রিং ক্লিন করে শুধুই T/F রেখে uppercase করো
+    final cleanAns = (content.answer ?? '')
+        .replaceAll(RegExp(r'[^TFtf]'), '')
+        .toUpperCase();
+
     return Column(
-      children: content.options.asMap().entries.map((entry) {
-        final option = entry.value;
-        final idx = entry.key;
+      children: List.generate(opts.length, (i) {
+        final option = opts[i];
 
         if (content.type == 1) {
-          final answerKey = (idx < content.answer.length) ? content.answer[idx] : '';
+          // TF: answerKey = cleanAns[i] (গার্ড সহ)
+          final answerKey = (i < cleanAns.length) ? cleanAns[i] : '';
           final selected = selectedTF[option.id];
 
           return Padding(
@@ -127,21 +136,24 @@ class OptionList extends StatelessWidget {
         }
 
         if (content.type == 2) {
+          // SBA: letter match — উভয় পাশই uppercase/trim করো
           final selected = selectedSBA[content.id];
-          final isSelected = selected == option.slNo;
-          final isCorrect = option.slNo == content.answer;
+          final isSelected = (selected ?? '').toUpperCase().trim() ==
+              (option.slNo ?? '').toUpperCase().trim();
+          final isCorrect = (option.slNo ?? '').toUpperCase().trim() ==
+              (content.answer ?? '').toUpperCase().trim();
 
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(
               children: [
                 RoundOptionButton(
-                  text: option.slNo,
+                  text: option.slNo ?? '',
                   isSelected: isSelected,
                   verdict: showCorrect
                       ? (isCorrect ? _Verdict.correct : _Verdict.wrong)
                       : _Verdict.neutral,
-                  onTap: () => onChooseSBA(content.id, option.slNo),
+                  onTap: () => onChooseSBA(content.id, option.slNo ?? ''),
                 ),
                 const SizedBox(width: 10),
                 Expanded(child: Html(data: option.title)),
@@ -151,9 +163,10 @@ class OptionList extends StatelessWidget {
         }
 
         return const SizedBox.shrink();
-      }).toList(),
+      }),
     );
   }
+
 }
 
 /* ===== Buttons ===== */
