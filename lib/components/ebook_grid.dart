@@ -80,6 +80,8 @@ class _EbookGridCard extends StatelessWidget {
     return v.contains('renew');
   }
 
+  bool get _isPending => !_isExpired && !_isActive;
+
   Future<void> _goDetails(BuildContext context) async {
     Navigator.push(
       context,
@@ -107,6 +109,12 @@ class _EbookGridCard extends StatelessWidget {
       }
       return;
     }
+
+    if (_isPending) {
+      await _goRenewOrExternal();
+      return;
+    }
+
     await _goDetails(context);
   }
 
