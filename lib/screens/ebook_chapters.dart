@@ -1,7 +1,7 @@
 import 'package:ebook_project/api/api_service.dart';
 import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/components/shimmer_list_loader.dart';
-import 'package:ebook_project/ebook_topics.dart';
+import 'package:ebook_project/screens/ebook_topics.dart';
 import 'package:ebook_project/models/ebook_chapter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
