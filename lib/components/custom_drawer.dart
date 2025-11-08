@@ -1,3 +1,4 @@
+import 'package:ebook_project/api/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,37 +40,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     setState(() {
       isLoggedIn = token != null;
     });
-  }
-
-  Future<void> logout(BuildContext context) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
-      if (token != null) {
-        final response = await http.post(
-          getFullUrl('/logout'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        );
-
-        if (response.statusCode == 200 || response.statusCode == 204) {
-          // Clear local storage
-          await prefs.clear();
-
-          // Navigate to login
-          if (context.mounted) {
-            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-          }
-        } else {
-          print("Logout failed: ${response.statusCode}");
-        }
-      }
-    } catch (e) {
-      print("Logout error: $e");
-    }
   }
 
   @override
@@ -139,7 +109,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             buildDrawerItem(
               icon: FontAwesomeIcons.signOutAlt,
               label: 'Logout',
-              onTap: () => logout(context),
+              onTap: () async => await ApiService().logout(context),
             ),
         ],
       ),

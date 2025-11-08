@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:ebook_project/api/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,6 +76,37 @@ class ApiService {
       }
     } catch (error) {
       throw Exception('Error fetching data: $error');
+    }
+  }
+
+  Future<void> logout(context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token != null) {
+        final response = await http.post(
+          getFullUrl('/logout'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 204) {
+          // Clear local storage
+          await prefs.clear();
+
+          // Navigate to login
+          if (context.mounted) {
+            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+          }
+        } else {
+          print("Logout failed: ${response.statusCode}");
+        }
+      }
+    } catch (e) {
+      print("Logout error: $e");
     }
   }
 }
