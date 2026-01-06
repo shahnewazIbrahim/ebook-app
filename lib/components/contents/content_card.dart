@@ -11,7 +11,9 @@ class ContentCard extends StatelessWidget {
 
   final VoidCallback onToggleAnswer;
   final VoidCallback? onTapDiscussion;
+  final VoidCallback? onTapReference;
   final VoidCallback? onTapVideo;
+  final VoidCallback? onTapNote;
 
   final void Function(int optionId, String label) onChooseTF;
   final void Function(int contentId, String slNo) onChooseSBA;
@@ -26,7 +28,9 @@ class ContentCard extends StatelessWidget {
     required this.onChooseTF,
     required this.onChooseSBA,
     this.onTapDiscussion,
+    this.onTapReference,
     this.onTapVideo,
+    this.onTapNote,
   });
 
   @override
@@ -61,7 +65,9 @@ class ContentCard extends StatelessWidget {
               showAnswerActive: showCorrect,
               onToggleAnswer: onToggleAnswer,
               onTapDiscussion: onTapDiscussion,
+              onTapReference: onTapReference,
               onTapVideo: onTapVideo,
+              onTapNote: onTapNote,
             ),
           ],
         ),
@@ -306,14 +312,18 @@ class ActionBar extends StatelessWidget {
   final bool showAnswerActive;
   final VoidCallback onToggleAnswer;
   final VoidCallback? onTapDiscussion;
+  final VoidCallback? onTapReference;
   final VoidCallback? onTapVideo;
+  final VoidCallback? onTapNote;
 
   const ActionBar({
     super.key,
     required this.showAnswerActive,
     required this.onToggleAnswer,
     this.onTapDiscussion,
+    this.onTapReference,
     this.onTapVideo,
+    this.onTapNote,
   });
 
   @override
@@ -327,8 +337,12 @@ class ActionBar extends StatelessWidget {
       ),
       if (onTapDiscussion != null)
         _PrimaryPillButton(label: "Discussion", onTap: onTapDiscussion!),
+      if (onTapReference != null)
+        _PrimaryPillButton(label: "Reference", onTap: onTapReference!),
       if (onTapVideo != null)
         _PrimaryPillButton(label: "Video", onTap: onTapVideo!),
+      if (onTapNote != null)
+        _PrimaryPillButton(label: "Note", onTap: onTapNote!),
     ];
 
     if (btns.isEmpty) return const SizedBox.shrink();

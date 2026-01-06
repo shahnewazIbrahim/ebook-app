@@ -5,12 +5,15 @@ import 'package:ebook_project/screens/ebook_contents.dart';
 import 'package:ebook_project/models/ebook_topic.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ebook_project/utils/token_store.dart';
+import 'package:ebook_project/screens/practice/practice_questions.dart';
 
 class EbookTopicsPage extends StatefulWidget {
   final String ebookId;
   final String subjectId;
   final String chapterId;
   final String ebookName;
+  final bool practice;
 
   const EbookTopicsPage({
     super.key,
@@ -18,6 +21,7 @@ class EbookTopicsPage extends StatefulWidget {
     required this.subjectId,
     required this.chapterId,
     required this.ebookName,
+    this.practice = false,
   });
 
   @override
@@ -38,9 +42,13 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
   Future<void> fetchEbookTopics() async {
     ApiService apiService = ApiService();
     try {
-      final data = await apiService.fetchEbookData(
-        "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters/${widget.chapterId}/topics",
-      );
+      var endpoint =
+          "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters/${widget.chapterId}/topics";
+      if (widget.practice) {
+        endpoint += "?practice=1";
+      }
+      endpoint = await TokenStore.attachPracticeToken(endpoint);
+      final data = await apiService.fetchEbookData(endpoint);
       setState(() {
         ebookTopics = (data['topics'] as List)
             .map((topicJson) => EbookTopic.fromJson(topicJson))
@@ -90,6 +98,32 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
 
             return GestureDetector(
               onTap: () {
+                if (topic.locked) {
+                  _showSubscriptionDialog(context);
+                  return;
+                }
+
+                if (topic.title.trim().toLowerCase() == 'practice questions') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PracticeQuestionsPage(
+                        ebookId: widget.ebookId,
+                        subjectId: widget.subjectId,
+                        chapterId: widget.chapterId,
+                        topicId: topic.id.toString(),
+                        ebookName: widget.ebookName,
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                if (widget.practice) {
+                  _showSubscriptionDialog(context);
+                  return;
+                }
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -140,15 +174,30 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
                     ),
                     const SizedBox(width: 14.0),
                     Expanded(
-                      child: Text(
-                        topic.title,
-                        style: const TextStyle(
-                          fontSize: 16.5,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF0f172a),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              topic.title,
+                              style: const TextStyle(
+                                fontSize: 16.5,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0f172a),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (topic.locked)
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8.0),
+                              child: Icon(
+                                Icons.lock,
+                                color: Colors.redAccent,
+                                size: 20,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ],
@@ -157,6 +206,31 @@ class _EbookTopicsState extends State<EbookTopicsPage> {
             );
           },
         ),
+      ),
+    );
+  }
+
+  void _showSubscriptionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Subscription Required'),
+        content: const Text(
+          'This topic is locked in practice mode. Please subscribe or purchase access to continue.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pushNamed('/choose-plan/${widget.ebookId}');
+            },
+            child: const Text('Subscribe'),
+          ),
+        ],
       ),
     );
   }

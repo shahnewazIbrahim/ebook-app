@@ -47,23 +47,46 @@ class MyApp extends StatelessWidget {
 }
 
 // Method to check for update
+// Future<void> _checkForUpdate() async {
+//   // Check for available update
+//
+//   InAppUpdate.checkForUpdate().then((info) {
+//     if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+//       // If update is available, start the update flow
+//       _performUpdate();
+//     }
+//   });
+// }
+//
+// // Method to perform update
+// Future<void> _performUpdate() async {
+//   InAppUpdate.performImmediateUpdate().catchError((e) {
+//     print("Update failed: $e");
+//   });
+// }
+
 Future<void> _checkForUpdate() async {
-  // Check for available update
+  try {
+    final info = await InAppUpdate.checkForUpdate();
 
-  InAppUpdate.checkForUpdate().then((info) {
-    if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-      // If update is available, start the update flow
-      _performUpdate();
+    if (info.updateAvailability == UpdateAvailability.updateAvailable &&
+        info.immediateUpdateAllowed) {
+      await _performUpdate();
     }
-  });
+  } catch (e) {
+    // Emulator / dev mode এ এখানে আসবে
+    debugPrint('In-app update skipped: $e');
+  }
 }
 
-// Method to perform update
 Future<void> _performUpdate() async {
-  InAppUpdate.performImmediateUpdate().catchError((e) {
-    print("Update failed: $e");
-  });
+  try {
+    await InAppUpdate.performImmediateUpdate();
+  } catch (e) {
+    debugPrint('Update failed: $e');
+  }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

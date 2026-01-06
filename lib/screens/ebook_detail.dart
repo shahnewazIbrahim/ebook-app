@@ -5,6 +5,8 @@ import 'package:ebook_project/screens/ebook_subjects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ebook_project/utils/token_store.dart';
 
 class EbookDetailPage extends StatefulWidget {
   final String ebookId;
@@ -26,7 +28,25 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   @override
   void initState() {
     super.initState();
+    _maybeStoreTokenFromLink();
     fetchEbookDetails();
+  }
+
+  Future<void> _maybeStoreTokenFromLink() async {
+    final rawLink = widget.ebook['button']?['link']?.toString();
+    final fallbackLink = widget.ebook['image']?.toString();
+    final token = _extractToken(rawLink) ?? _extractToken(fallbackLink);
+    if (token == null || token.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+    await TokenStore.savePracticeToken(token);
+  }
+
+  String? _extractToken(String? url) {
+    if (url == null || url.isEmpty) return null;
+    final match = RegExp(r'[?&]token=([^&]+)').firstMatch(url);
+    if (match == null) return null;
+    return Uri.decodeComponent(match.group(1) ?? '');
   }
 
   Future<void> fetchEbookDetails() async {
@@ -48,6 +68,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isExpired = widget.ebook['isExpired'] == true;
     return AppLayout(
       // title: "Ebook Details",
       title: "${widget.ebook['name']} Details",
@@ -99,61 +120,89 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                           height: 8,
                         ),
 
-                        ElevatedButton(
-                          onPressed: () {
-                            // Navigate to subjects (You need to implement the Subjects screen)
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EbookSubjectsPage(
-                                  ebookId: ebookDetail['id'].toString(),
-                                  ebookName: widget.ebook['name'].toString(),
-                                ),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Color(0xFF0c4a6e), // Normal color #0c4a6e
-                            padding: EdgeInsets.symmetric(
+                        if (!isExpired)
+                          ElevatedButton(
+                            onPressed: () => _openSubjects(practice: false),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color(0xFF0c4a6e), // Normal color #0c4a6e
+                              padding: EdgeInsets.symmetric(
                                 vertical: 8,
-                                horizontal: 12), // Optional padding adjustment
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(8), // Rounded corners
+                                horizontal: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ).copyWith(
+                              backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return const Color.fromARGB(
+                                            255, 8, 140, 216)
+                                        .withOpacity(0.5);
+                                  } else if (states
+                                      .contains(MaterialState.hovered)) {
+                                    return const Color.fromARGB(
+                                            255, 8, 140, 216)
+                                        .withOpacity(0.8);
+                                  }
+                                  return const Color.fromARGB(255, 12, 128, 196);
+                                },
+                              ),
                             ),
-                          ).copyWith(
-                            // Handle hover and pressed state colors
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
-                              if (states.contains(MaterialState.pressed)) {
-                                return Color.fromARGB(255, 8, 140, 216)
-                                    .withOpacity(
-                                        0.5); // 50% opacity when pressed
-                              } else if (states
-                                  .contains(MaterialState.hovered)) {
-                                return Color.fromARGB(255, 8, 140, 216)
-                                    .withOpacity(
-                                        0.8); // 20% opacity when hovered
-                              }
-                              return Color.fromARGB(
-                                  255, 12, 128, 196); // Default color
-                            }),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons
+                                      .solidHandPointRight,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Go to Subjects',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (isExpired)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 6.0),
+                            child: Text(
+                              'Your reading access is expired.',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () => _openSubjects(practice: true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0f172a),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                            children: const [
                               Icon(
-                                FontAwesomeIcons
-                                    .solidHandPointRight, // This is a hand icon from font-awesome
+                                FontAwesomeIcons.questionCircle,
                                 color: Colors.white,
-                                size: 30,
+                                size: 26,
                               ),
                               SizedBox(width: 8),
                               Text(
-                                'Go to Subjects',
+                                'Practice Questions',
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],
@@ -282,6 +331,20 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                       ],
                     ),
                   )),
+    );
+  }
+
+  Future<void> _openSubjects({required bool practice}) async {
+    await _maybeStoreTokenFromLink();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EbookSubjectsPage(
+          ebookId: ebookDetail['id'].toString(),
+          ebookName: widget.ebook['name'].toString(),
+          practice: practice,
+        ),
+      ),
     );
   }
 

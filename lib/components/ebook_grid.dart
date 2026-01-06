@@ -4,7 +4,6 @@ import 'package:ebook_project/models/ebook.dart';
 import 'package:ebook_project/screens/ebook_detail.dart';
 import 'package:ebook_project/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class EbookGrid extends StatelessWidget {
   final List<Ebook> ebooks;
@@ -73,13 +72,6 @@ class _EbookGridCard extends StatelessWidget {
   Color get _statusColor =>
       _isExpired ? Colors.red : (_isActive ? Colors.green : Colors.orange);
 
-  bool get _hasButton => ebook.button?.status == true;
-
-  bool get _hasRenewAction {
-    final v = (ebook.button?.value ?? '').toLowerCase();
-    return v.contains('renew');
-  }
-
   bool get _isPending => !_isExpired && !_isActive;
 
   Future<void> _goDetails(BuildContext context) async {
@@ -101,15 +93,9 @@ class _EbookGridCard extends StatelessWidget {
 
   Future<void> _onTap(BuildContext context) async {
     if (_isExpired) {
-      if (_hasButton && _hasRenewAction) {
-        await _goRenewOrExternal();
-      } else {
-        Get.snackbar('Expired', 'এই ই-বুকটির মেয়াদ শেষ হয়েছে।',
-            snackPosition: SnackPosition.BOTTOM);
-      }
+      await _goDetails(context);
       return;
     }
-
     if (_isPending) {
       await _goRenewOrExternal();
       return;

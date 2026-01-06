@@ -3,6 +3,7 @@ import 'package:ebook_project/components/app_layout.dart';
 import 'package:ebook_project/components/shimmer_list_loader.dart';
 import 'package:ebook_project/screens/ebook_topics.dart';
 import 'package:ebook_project/models/ebook_chapter.dart';
+import 'package:ebook_project/utils/token_store.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -10,12 +11,14 @@ class EbookChaptersPage extends StatefulWidget {
   final String ebookId;
   final String subjectId;
   final String ebookName;
+  final bool practice;
 
   const EbookChaptersPage({
     super.key,
     required this.ebookId,
     required this.subjectId,
     required this.ebookName,
+    this.practice = false,
   });
 
   @override
@@ -36,9 +39,13 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
   Future<void> fetchEbookChapters() async {
     ApiService apiService = ApiService();
     try {
-      final data = await apiService.fetchEbookData(
-        "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters",
-      );
+      var endpoint =
+          "/v1/ebooks/${widget.ebookId}/subjects/${widget.subjectId}/chapters";
+      if (widget.practice) {
+        endpoint += "?practice=1";
+      }
+      endpoint = await TokenStore.attachPracticeToken(endpoint);
+      final data = await apiService.fetchEbookData(endpoint);
       setState(() {
         ebookChapters = (data['chapters'] as List)
             .map((chapterJson) => EbookChapter.fromJson(chapterJson))
@@ -88,6 +95,10 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
 
             return GestureDetector(
               onTap: () {
+                if (chapter.locked) {
+                  _showSubscriptionDialog(context);
+                  return;
+                }
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -96,6 +107,7 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
                       subjectId: widget.subjectId,
                       chapterId: chapter.id.toString(),
                       ebookName: widget.ebookName,
+                      practice: widget.practice,
                     ),
                   ),
                 );
@@ -136,15 +148,30 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
                     ),
                     const SizedBox(width: 14.0),
                     Expanded(
-                      child: Text(
-                        chapter.title,
-                        style: const TextStyle(
-                          fontSize: 16.5,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF0f172a),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              chapter.title,
+                              style: const TextStyle(
+                                fontSize: 16.5,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0f172a),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (chapter.locked)
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8.0),
+                              child: Icon(
+                                Icons.lock,
+                                color: Colors.redAccent,
+                                size: 20,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ],
@@ -153,6 +180,31 @@ class _EbookChaptersState extends State<EbookChaptersPage> {
             );
           },
         ),
+      ),
+    );
+  }
+
+  void _showSubscriptionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Subscription Required'),
+        content: const Text(
+          'This item is locked in practice mode. Please subscribe or purchase access to continue.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pushNamed('/choose-plan/${widget.ebookId}');
+            },
+            child: const Text('Subscribe'),
+          ),
+        ],
       ),
     );
   }
