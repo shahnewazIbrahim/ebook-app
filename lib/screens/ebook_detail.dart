@@ -35,18 +35,12 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   Future<void> _maybeStoreTokenFromLink() async {
     final rawLink = widget.ebook['button']?['link']?.toString();
     final fallbackLink = widget.ebook['image']?.toString();
-    final token = _extractToken(rawLink) ?? _extractToken(fallbackLink);
+    final token = TokenStore.extractTokenFromUrl(rawLink) ??
+        TokenStore.extractTokenFromUrl(fallbackLink);
     if (token == null || token.isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
     await TokenStore.savePracticeToken(token);
-  }
-
-  String? _extractToken(String? url) {
-    if (url == null || url.isEmpty) return null;
-    final match = RegExp(r'[?&]token=([^&]+)').firstMatch(url);
-    if (match == null) return null;
-    return Uri.decodeComponent(match.group(1) ?? '');
   }
 
   Future<void> fetchEbookDetails() async {
@@ -106,10 +100,13 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                                 mainAxisSize: MainAxisSize
                                     .min, // Ensures the column only takes the space needed
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: ebookDetail['specifications']
-                                    .map<Widget>((spec) {
-                                  return _buildRow(
-                                      spec['title'], spec['value']);
+                                children: ((ebookDetail['specifications'] as List?)
+                                            ?? [])
+                                        .map<Widget>((spec) {
+                                  if (spec == null || spec is! Map) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return _buildRow(spec['title'], spec['value']);
                                 }).toList(),
                               ),
                             ),

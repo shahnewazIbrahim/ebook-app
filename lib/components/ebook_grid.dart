@@ -8,11 +8,15 @@ import 'package:flutter/material.dart';
 class EbookGrid extends StatelessWidget {
   final List<Ebook> ebooks;
   final bool isLoading;
+  final Map<int, bool?> practiceAvailability;
+  final Future<void> Function(BuildContext, Ebook) onCardTap;
 
   const EbookGrid({
     super.key,
     required this.ebooks,
     required this.isLoading,
+    required this.practiceAvailability,
+    required this.onCardTap,
   });
 
   @override
@@ -34,7 +38,12 @@ class EbookGrid extends StatelessWidget {
             childAspectRatio: aspect,
           ),
           itemCount: ebooks.length,
-          itemBuilder: (_, i) => _EbookGridCard(ebook: ebooks[i], tileIndex: i),
+          itemBuilder: (_, i) => _EbookGridCard(
+            ebook: ebooks[i],
+            tileIndex: i,
+            hasPractice: practiceAvailability[ebooks[i].id],
+            onCardTap: onCardTap,
+          ),
         );
       },
     );
@@ -50,24 +59,30 @@ class EbookGrid extends StatelessWidget {
   double _aspectForWidth(double w) {
     if (w >= 1280) return 0.78;
     if (w >= 1024) return 0.80;
-    if (w >= 768)  return 0.72;
-    return 0.64; // মোবাইলে লম্বা কার্ড
+    if (w >= 768) return 0.72;
+    return 0.64;
   }
 }
 
 class _EbookGridCard extends StatelessWidget {
   final Ebook ebook;
   final int tileIndex;
-  const _EbookGridCard({required this.ebook, required this.tileIndex});
+  final bool? hasPractice;
+  final Future<void> Function(BuildContext, Ebook) onCardTap;
+
+  const _EbookGridCard({
+    required this.ebook,
+    required this.tileIndex,
+    this.hasPractice,
+    required this.onCardTap,
+  });
 
   bool get _isActive {
     final s = ebook.status;
     return s == 1 || s == '1' || s == true || s == 'Active';
   }
-  bool get _isExpired => ebook.isExpired == true;
 
-  String get _statusText =>
-      _isExpired ? 'Expired' : (_isActive ? 'Active' : 'Pending');
+  bool get _isExpired => ebook.isExpired == true;
 
   Color get _statusColor =>
       _isExpired ? Colors.red : (_isActive ? Colors.green : Colors.orange);
@@ -93,15 +108,14 @@ class _EbookGridCard extends StatelessWidget {
 
   Future<void> _onTap(BuildContext context) async {
     if (_isExpired) {
-      await _goDetails(context);
+      await onCardTap(context, ebook);
       return;
     }
     if (_isPending) {
       await _goRenewOrExternal();
       return;
     }
-
-    await _goDetails(context);
+    await onCardTap(context, ebook);
   }
 
   @override
@@ -124,56 +138,6 @@ class _EbookGridCard extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ===== Cover (flexible) =====
-                  // Expanded(
-                  //   child: Stack(
-                  //     fit: StackFit.expand,
-                  //     children: [
-                  //       ClipRRect(
-                  //         borderRadius: BorderRadius.circular(12),
-                  //         child: (ebook.image.isNotEmpty)
-                  //             ? Image.network(ebook.image, fit: BoxFit.cover)
-                  //             : Container(
-                  //           decoration: BoxDecoration(
-                  //             color: tint,
-                  //             borderRadius: BorderRadius.circular(12),
-                  //           ),
-                  //           child: Center(
-                  //             child: Text(
-                  //               (ebook.name.isNotEmpty
-                  //                   ? ebook.name[0]
-                  //                   : '?')
-                  //                   .toUpperCase(),
-                  //               style: const TextStyle(
-                  //                 fontWeight: FontWeight.w800,
-                  //                 fontSize: 28,
-                  //                 color: AppColors.textPrimary,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       Positioned(
-                  //         top: 8,
-                  //         left: 8,
-                  //         child: Container(
-                  //           padding: const EdgeInsets.symmetric(
-                  //               horizontal: 8, vertical: 4),
-                  //           decoration: BoxDecoration(
-                  //             color: _statusColor,
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           child: Text(
-                  //             _statusText,
-                  //             style: const TextStyle(
-                  //                 color: Colors.white, fontSize: 11.5),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-// ===== Cover (flexible) =====
                   Expanded(
                     child: Stack(
                       fit: StackFit.expand,
@@ -182,32 +146,34 @@ class _EbookGridCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           child: _CoverImage(
                             imageUrl: ebook.image,
-                            fallbackUrl: 'https://banglamed.s3.ap-south-1.amazonaws.com/images/default_book.png',
+                            fallbackUrl:
+                                'https://banglamed.s3.ap-south-1.amazonaws.com/images/default_book.png',
                           ),
                         ),
-
-                        // ===== Status badge (always on top) =====
                         Positioned(
                           top: 8,
                           left: 8,
                           child: IgnorePointer(
-                            ignoring: true, // ট্যাপ ব্লক করবে না
+                            ignoring: true,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: _statusColor,
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.white, width: 1),  // হালকা স্ট্রোক
+                                border: Border.all(color: Colors.white, width: 1),
                                 boxShadow: const [
                                   BoxShadow(
-                                    color: Color(0x33000000), // subtle shadow
+                                    color: Color(0x33000000),
                                     blurRadius: 4,
                                     offset: Offset(0, 2),
                                   ),
                                 ],
                               ),
                               child: Text(
-                                _statusText,
+                                _isExpired
+                                    ? 'Expired'
+                                    : (_isActive ? 'Active' : 'Pending'),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 11.5,
@@ -218,16 +184,56 @@ class _EbookGridCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                        if (hasPractice == true)
+                          Positioned(
+                            right: 10,
+                            bottom: 10,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade700,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                'Practice',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          )
+                        else if (hasPractice == false)
+                          Positioned(
+                            right: 10,
+                            bottom: 10,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade600,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                'No Practice',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
 
                   const SizedBox(height: 8),
 
-                  // ===== Title (package-free auto-fit) =====
-                  // Fixed height box; ভিতরে FittedBox scaleDown করে নেয়
                   Builder(builder: (context) {
-                    final titleBoxH = dense ? 36.0 : 48.0; // 2–3 লাইনের জায়গা
+                    final titleBoxH = dense ? 36.0 : 48.0;
                     return SizedBox(
                       height: titleBoxH,
                       width: double.infinity,
@@ -237,14 +243,11 @@ class _EbookGridCard extends StatelessWidget {
                           alignment: Alignment.center,
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
-                              // Grid সেলের প্রস্থেই constrain করি
                               maxWidth: c.maxWidth,
                             ),
                             child: MediaQuery(
-                              // সিস্টেম text-scale বড় হলেও এখানে 1.0
-                              data: MediaQuery.of(context).copyWith(
-                                textScaler: const TextScaler.linear(1.0),
-                              ),
+                              data: MediaQuery.of(context)
+                                  .copyWith(textScaler: const TextScaler.linear(1.0)),
                               child: Text(
                                 ebook.name,
                                 softWrap: true,
@@ -253,7 +256,7 @@ class _EbookGridCard extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 16, // বেস সাইজ; FittedBox কমাবে
+                                  fontSize: 16,
                                   height: 1.15,
                                   color: AppColors.textPrimary,
                                 ),
@@ -314,18 +317,19 @@ class _TinyMeta extends StatelessWidget {
 }
 
 class _CoverImage extends StatelessWidget {
+  static const _imageHost = 'http://banglamed.net.test';
   final String imageUrl;
   final String fallbackUrl;
   const _CoverImage({required this.imageUrl, required this.fallbackUrl});
 
   @override
   Widget build(BuildContext context) {
-    final String cover = (imageUrl.isNotEmpty) ? imageUrl : fallbackUrl;
+    final String cover =
+        (imageUrl.isNotEmpty) ? _normalize(imageUrl) : _normalize(fallbackUrl);
 
     return Image.network(
       cover,
       fit: BoxFit.cover,
-      // লোডিং অবস্থায় হালকা প্লেসহোল্ডার
       loadingBuilder: (context, child, progress) {
         if (progress == null) return child;
         return Container(
@@ -335,13 +339,11 @@ class _CoverImage extends StatelessWidget {
           ),
         );
       },
-      // নেটওয়ার্ক ফেইল করলে ডিফল্ট
       errorBuilder: (context, error, stack) {
         return Image.network(
           fallbackUrl,
           fit: BoxFit.cover,
           errorBuilder: (context, _, __) {
-            // ডিফল্টও ফেইল করলে শেষ অবলম্বন
             return Container(
               color: Colors.grey.shade200,
               child: const Center(
@@ -351,7 +353,17 @@ class _CoverImage extends StatelessWidget {
           },
         );
       },
-    );
+      );
+  }
+
+  String _normalize(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) return fallbackUrl;
+    final uri = Uri.tryParse(trimmed);
+    if (uri != null && uri.hasScheme && uri.host.isNotEmpty) {
+      return trimmed;
+    }
+    final path = trimmed.startsWith('/') ? trimmed : '/$trimmed';
+    return '$_imageHost$path';
   }
 }
-

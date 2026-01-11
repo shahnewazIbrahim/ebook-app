@@ -9,10 +9,11 @@ import 'package:in_app_update/in_app_update.dart';
 import '../api/api_service.dart';
 import '../api/routes.dart';
 import '../components/app_layout.dart';
-import '../components/ebook_card.dart';
 import '../components/shimmer_ebook_card_loader.dart';
-import 'login.dart';
+import '../components/under_maintanance_snackbar.dart';
 import '../models/ebook.dart';
+import 'ebook_detail.dart';
+import 'login.dart';
 
 class MyApp extends StatelessWidget {
   final String initialRoute;
@@ -101,6 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Ebook> ebooks = [];
   bool isLoading = true;
   var apiUrl = getFullUrl('/v1/ebooks');
+  final Map<int, bool> _practiceAvailability = {};
+  final Map<int, Future<bool>> _practiceFutures = {};
 
   @override
   void initState() {
@@ -113,9 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ApiService apiService = ApiService();
     try {
       final data = await apiService.fetchEbookData('/v1/ebooks');
+      final list = (data['0'] as List?) ?? [];
       setState(() {
-        ebooks = (data['0'] as List).map((e) => Ebook.fromJson(e)).toList();
+        ebooks = list.map((e) => Ebook.fromJson(e)).toList();
         isLoading = false;
+        _practiceAvailability.clear();
+        _practiceFutures.clear();
       });
     } catch (error) {
       setState(() {
@@ -155,8 +161,83 @@ class _MyHomePageState extends State<MyHomePage> {
         child: EbookGrid(
           ebooks: ebooks,
           isLoading: isLoading,
+          practiceAvailability: _practiceAvailability,
+          onCardTap: _handleCardTap,
         ),
       ),
     );
+  }
+
+  bool _isActive(Ebook ebook) {
+    final s = ebook.status;
+    return s == 1 || s == '1' || s == true || s == 'Active';
+  }
+
+  Future<void> _handleCardTap(BuildContext context, Ebook ebook) async {
+    if (!ebook.isExpired && !_isActive(ebook)) {
+      showUnderMaintenanceSnackbar();
+      return;
+    }
+
+    final hasPractice = await _ensurePracticeAvailability(ebook);
+    if (!hasPractice) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Practice questions are not available for this book.'),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EbookDetailPage(
+          ebook: ebook.toJson(),
+          ebookId: ebook.id.toString(),
+        ),
+        settings: RouteSettings(name: '/my-ebooks/${ebook.id}'),
+      ),
+    );
+  }
+
+  Future<bool> _ensurePracticeAvailability(Ebook ebook) {
+    // if (_practiceAvailability.containsKey(ebook.id)) {
+    //   return Future.value(_practiceAvailability[ebook.id]!);
+    // }
+    // if (_practiceFutures.containsKey(ebook.id)) {
+    //   return _practiceFutures[ebook.id]!;
+    // }
+
+    final future = _detectPracticeAvailability(ebook);
+    
+    _practiceFutures[ebook.id] = future;
+    future.then((value) {
+      if (!mounted) return;
+      setState(() {
+        _practiceAvailability[ebook.id] = value;
+      });
+      _practiceFutures.remove(ebook.id);
+    }).catchError((_) {
+      if (!mounted) return;
+      setState(() {
+        _practiceAvailability.remove(ebook.id);
+      });
+      _practiceFutures.remove(ebook.id);
+    });
+
+    return future;
+  }
+
+  Future<bool> _detectPracticeAvailability(Ebook ebook) async {
+    final apiService = ApiService();
+    try {
+      final endpoint = "/v1/ebooks/${ebook.id}/practice-access";
+      final data = await apiService.fetchEbookData(endpoint);
+      return (data['practice_questions_available'] == true);
+    } catch (_) {
+      return false;
+    }
   }
 }

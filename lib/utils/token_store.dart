@@ -19,4 +19,11 @@ class TokenStore {
     final separator = endpoint.contains('?') ? '&' : '?';
     return '$endpoint${separator}token=${Uri.encodeQueryComponent(token)}';
   }
+
+  static String? extractTokenFromUrl(String? url) {
+    if (url == null || url.isEmpty) return null;
+    final match = RegExp(r'[?&]token=([^&]+)').firstMatch(url);
+    if (match == null) return null;
+    return Uri.decodeComponent(match.group(1) ?? '');
+  }
 }
