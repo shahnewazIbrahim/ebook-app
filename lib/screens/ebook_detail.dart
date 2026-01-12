@@ -23,6 +23,8 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   Map<String, dynamic> ebookDetail = {};
   bool isLoading = true;
   bool isError = false;
+  bool? practiceAvailable;
+  bool isPracticeStatusLoading = true;
   String selectedTab = 'features'; // Tab selection
 
   @override
@@ -30,6 +32,7 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
     super.initState();
     _maybeStoreTokenFromLink();
     fetchEbookDetails();
+    _checkPracticeAvailability();
   }
 
   Future<void> _maybeStoreTokenFromLink() async {
@@ -60,9 +63,39 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
     }
   }
 
+  Future<void> _checkPracticeAvailability() async {
+    final apiService = ApiService();
+    try {
+      final endpoint =
+          await TokenStore.attachPracticeToken("/v1/ebooks/${widget.ebookId}/practice-access");
+      final data = await apiService.fetchEbookData(endpoint);
+      final available = data['practice_questions_available'] == true;
+      if (!mounted) return;
+      setState(() {
+        practiceAvailable = available;
+        isPracticeStatusLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        practiceAvailable = null;
+        isPracticeStatusLoading = false;
+      });
+      print("Error fetching practice availability: $error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isExpired = widget.ebook['isExpired'] == true;
+    final dynamic ebookStatus = widget.ebook['status'];
+    final bool isActive =
+        ebookStatus == 1 ||
+        ebookStatus == '1' ||
+        ebookStatus == true ||
+        ebookStatus == 'Active';
+    final bool canShowPracticeButton =
+        practiceAvailable == true &&  isExpired;
     return AppLayout(
       // title: "Ebook Details",
       title: "${widget.ebook['name']} Details",
@@ -177,34 +210,36 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
                               ),
                             ),
                           ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () => _openSubjects(practice: true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0f172a),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                        if (canShowPracticeButton) ...[
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () => _openSubjects(practice: true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0f172a),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  FontAwesomeIcons.questionCircle,
+                                  color: Colors.white,
+                                  size: 26,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Practice Questions',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(
-                                FontAwesomeIcons.questionCircle,
-                                color: Colors.white,
-                                size: 26,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Practice Questions',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        ),
+                        ],
 
                         SizedBox(height: 16),
                         // Features and Instructions Tabs

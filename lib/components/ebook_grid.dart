@@ -118,6 +118,40 @@ class _EbookGridCard extends StatelessWidget {
     await onCardTap(context, ebook);
   }
 
+  Widget _buildPracticeBadge() {
+    if (hasPractice != true) {
+      return const SizedBox.shrink();
+    }
+
+    if (_isActive && !_isExpired) {
+      return const SizedBox.shrink();
+    }
+
+    final color = Colors.green;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x22000000),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        'Practice',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tint = AppColors.cardTintByIndex(tileIndex);
@@ -184,27 +218,11 @@ class _EbookGridCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (hasPractice == false)
-                          Positioned(
-                            right: 10,
-                            bottom: 10,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.red.shade600,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                'No Practice',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
+                        Positioned(
+                          right: 10,
+                          bottom: 10,
+                          child: _buildPracticeBadge(),
+                        ),
                       ],
                     ),
                   ),

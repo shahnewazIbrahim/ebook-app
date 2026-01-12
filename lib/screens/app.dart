@@ -14,6 +14,7 @@ import '../components/under_maintanance_snackbar.dart';
 import '../models/ebook.dart';
 import 'ebook_detail.dart';
 import 'login.dart';
+import '../utils/token_store.dart';
 
 class MyApp extends StatelessWidget {
   final String initialRoute;
@@ -123,6 +124,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _practiceAvailability.clear();
         _practiceFutures.clear();
       });
+      for (final ebook in ebooks) {
+        _ensurePracticeAvailability(ebook);
+      }
     } catch (error) {
       setState(() {
         isLoading = false;
@@ -231,13 +235,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<bool> _detectPracticeAvailability(Ebook ebook) async {
+    await _ensurePracticeToken(ebook);
     final apiService = ApiService();
     try {
-      final endpoint = "/v1/ebooks/${ebook.id}/practice-access";
+      final endpoint = await TokenStore.attachPracticeToken("/v1/ebooks/${ebook.id}/practice-access");
       final data = await apiService.fetchEbookData(endpoint);
       return (data['practice_questions_available'] == true);
     } catch (_) {
       return false;
     }
+  }
+
+  Future<void> _ensurePracticeToken(Ebook ebook) async {
+    final existing = await TokenStore.practiceToken();
+    if (existing != null && existing.isNotEmpty) return;
+    final token = TokenStore.extractTokenFromUrl(ebook.button?.link);
+    if (token == null || token.isEmpty) return;
+    await TokenStore.savePracticeToken(token);
   }
 }
