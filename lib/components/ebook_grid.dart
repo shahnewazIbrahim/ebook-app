@@ -184,28 +184,7 @@ class _EbookGridCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (hasPractice == true)
-                          Positioned(
-                            right: 10,
-                            bottom: 10,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.green.shade700,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                'Practice',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          )
-                        else if (hasPractice == false)
+                        if (hasPractice == false)
                           Positioned(
                             right: 10,
                             bottom: 10,
