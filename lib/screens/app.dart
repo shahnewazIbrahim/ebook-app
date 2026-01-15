@@ -187,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // if(ebook.isExpired) {
     //
     // }
-    if (!hasPractice ) {
+    if (!hasPractice && ebook.isExpired) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
