@@ -77,12 +77,23 @@ class _EbookGridCard extends StatelessWidget {
     required this.onCardTap,
   });
 
-  bool get _isActive {
-    final s = ebook.status;
-    return s == 1 || s == '1' || s == true || s == 'Active';
+  String? get _normalizedStatus {
+    final status = ebook.status;
+    if (status == null) return null;
+    return status.toString().trim().toLowerCase();
   }
 
-  bool get _isExpired => ebook.isExpired == true;
+  bool get _isActive {
+    final status = _normalizedStatus;
+    return status == 'active' ||
+        status == '1' ||
+        status == 'true' ||
+        ebook.status == 1 ||
+        ebook.status == true;
+  }
+
+  bool get _isExpired =>
+      ebook.isExpired == true || _normalizedStatus == 'expired';
 
   Color get _statusColor =>
       _isExpired ? Colors.red : (_isActive ? Colors.green : Colors.orange);

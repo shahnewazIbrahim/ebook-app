@@ -184,7 +184,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final hasPractice = await _ensurePracticeAvailability(ebook);
-    if (!hasPractice) {
+    // if(ebook.isExpired) {
+    //
+    // }
+    if (!hasPractice ) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -193,6 +196,12 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       return;
     }
+    //for debugging
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //    SnackBar(
+    //     content: Text('${ebook.isExpired}'),
+    //   ),
+    // );
 
     Navigator.push(
       context,
@@ -207,12 +216,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<bool> _ensurePracticeAvailability(Ebook ebook) {
-    // if (_practiceAvailability.containsKey(ebook.id)) {
-    //   return Future.value(_practiceAvailability[ebook.id]!);
-    // }
-    // if (_practiceFutures.containsKey(ebook.id)) {
-    //   return _practiceFutures[ebook.id]!;
-    // }
+    if (_practiceAvailability.containsKey(ebook.id)) {
+      return Future.value(_practiceAvailability[ebook.id]!);
+    }
+    if (_practiceFutures.containsKey(ebook.id)) {
+      return _practiceFutures[ebook.id]!;
+    }
 
     final future = _detectPracticeAvailability(ebook);
     

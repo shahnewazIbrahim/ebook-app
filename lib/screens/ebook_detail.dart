@@ -89,11 +89,11 @@ class _EbookDetailPageState extends State<EbookDetailPage> {
   Widget build(BuildContext context) {
     final bool isExpired = widget.ebook['isExpired'] == true;
     final dynamic ebookStatus = widget.ebook['status'];
-    final bool isActive =
+    final String? normalizedStatus = ebookStatus?.toString().trim().toLowerCase();
+    final bool isActive = normalizedStatus == 'active' ||
         ebookStatus == 1 ||
         ebookStatus == '1' ||
-        ebookStatus == true ||
-        ebookStatus == 'Active';
+        ebookStatus == true;
     final bool canShowPracticeButton =
         practiceAvailable == true &&  isExpired;
     return AppLayout(
