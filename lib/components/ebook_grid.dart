@@ -1,7 +1,6 @@
 // lib/components/ebook_grid.dart
 import 'package:ebook_project/components/under_maintanance_snackbar.dart';
 import 'package:ebook_project/models/ebook.dart';
-import 'package:ebook_project/screens/ebook_detail.dart';
 import 'package:ebook_project/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +9,7 @@ class EbookGrid extends StatelessWidget {
   final bool isLoading;
   final Map<int, bool?> practiceAvailability;
   final Future<void> Function(BuildContext, Ebook) onCardTap;
+  final Future<void> Function(Ebook)? onBuyTap;
 
   const EbookGrid({
     super.key,
@@ -17,6 +17,7 @@ class EbookGrid extends StatelessWidget {
     required this.isLoading,
     required this.practiceAvailability,
     required this.onCardTap,
+    this.onBuyTap,
   });
 
   @override
@@ -43,6 +44,7 @@ class EbookGrid extends StatelessWidget {
             tileIndex: i,
             hasPractice: practiceAvailability[ebooks[i].id],
             onCardTap: onCardTap,
+            onBuyTap: onBuyTap,
           ),
         );
       },
@@ -69,12 +71,14 @@ class _EbookGridCard extends StatelessWidget {
   final int tileIndex;
   final bool? hasPractice;
   final Future<void> Function(BuildContext, Ebook) onCardTap;
+  final Future<void> Function(Ebook)? onBuyTap;
 
   const _EbookGridCard({
     required this.ebook,
     required this.tileIndex,
     this.hasPractice,
     required this.onCardTap,
+    this.onBuyTap,
   });
 
   String? get _normalizedStatus {
@@ -99,19 +103,6 @@ class _EbookGridCard extends StatelessWidget {
       _isExpired ? Colors.red : (_isActive ? Colors.green : Colors.orange);
 
   bool get _isPending => !_isExpired && !_isActive;
-
-  Future<void> _goDetails(BuildContext context) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EbookDetailPage(
-          ebook: ebook.toJson(),
-          ebookId: ebook.id.toString(),
-        ),
-        settings: RouteSettings(name: '/my-ebooks/${ebook.id}'),
-      ),
-    );
-  }
 
   Future<void> _goRenewOrExternal() async {
     showUnderMaintenanceSnackbar();
@@ -163,10 +154,38 @@ class _EbookGridCard extends StatelessWidget {
     );
   }
 
+  Widget _buildBuyButton() {
+    return SizedBox(
+      height: 34,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: AppColors.primaryGradientSoft(),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: AppColors.glassShadow,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: () => onBuyTap?.call(ebook),
+            child: Center(
+              child: Text(
+                'Buy',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.onGradient,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final tint = AppColors.cardTintByIndex(tileIndex);
-
     return Material(
       color: Colors.white,
       elevation: 2,
@@ -284,6 +303,7 @@ class _EbookGridCard extends StatelessWidget {
                   ],
 
                   const SizedBox(height: 8),
+                  if (onBuyTap != null) _buildBuyButton(),
                 ],
               );
             },

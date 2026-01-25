@@ -6,19 +6,20 @@ import 'package:ebook_project/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:in_app_update/in_app_update.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api_service.dart';
 import '../components/app_layout.dart';
 import '../components/shimmer_ebook_card_loader.dart';
-import '../components/under_maintanance_snackbar.dart';
 import '../models/all_ebook.dart';
 import '../models/ebook.dart';
+import '../utils/token_store.dart';
 import 'ebook_detail.dart';
 import 'device_verification.dart';
 import 'login.dart';
 import 'my_ebooks_page.dart';
-import '../utils/token_store.dart';
+import 'subscription_page.dart';
+
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 class MyApp extends StatelessWidget {
   final String initialRoute;
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
         '/device-verification': (context) => const DeviceVerificationPage(),
         '/profile': (context) => const ProfilePage(),
       },
+      navigatorObservers: [routeObserver],
     );
   }
 }
@@ -103,11 +105,12 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with RouteAware {
   List<Ebook> ebooks = [];
   bool isLoading = true;
   final Map<int, bool> _practiceAvailability = {};
   final Map<int, Future<bool>> _practiceFutures = {};
+  final Map<int, AllEbook> _allEbookById = {};
 
   @override
   void initState() {
@@ -116,13 +119,42 @@ class _MyHomePageState extends State<MyHomePage> {
     fetchEbooks();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != null) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    fetchEbooks();
+  }
+
   Future<void> fetchEbooks() async {
     final apiService = ApiService();
     try {
-      final data = await apiService.fetchEbookData('/v1/all-ebooks');
-      final list = _normalizeEbookList(data);
+      final list = _normalizeEbookList(
+        await apiService.fetchEbookData('/v1/all-ebooks'),
+      );
+      final parsed = list.map((e) => AllEbook.fromJson(e)).toList();
       setState(() {
-        ebooks = list.map((e) => AllEbook.fromJson(e).toEbook()).toList();
+        _allEbookById
+          ..clear()
+          ..addEntries(
+            parsed
+                .where((ebook) => ebook.softcopyId != 0)
+                .map((ebook) => MapEntry(ebook.softcopyId, ebook)),
+          );
+        ebooks = parsed.map((e) => e.toEbook()).toList();
         isLoading = false;
         _practiceAvailability.clear();
         _practiceFutures.clear();
@@ -173,8 +205,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _handleCardTap(BuildContext context, Ebook ebook) async {
-    if (!ebook.isExpired && !_isActive(ebook)) {
-      showUnderMaintenanceSnackbar();
+    if (!_isActive(ebook)) {
+      await _openPurchaseLink(ebook);
       return;
     }
 
@@ -230,12 +262,13 @@ class _MyHomePageState extends State<MyHomePage> {
               isLoading: isLoading,
               practiceAvailability: _practiceAvailability,
               onCardTap: _handleCardTap,
+              onBuyTap: _openPurchaseLink,
             ),
           ),
-        ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
   Widget _buildDeviceVerificationCard() {
     final theme = Theme.of(context);
@@ -338,8 +371,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: OutlinedButton(
                     onPressed: () => _openPurchaseLink(ebook),
                     style: OutlinedButton.styleFrom(
-                      side:
-                          BorderSide(color: AppColors.primary.withOpacity(0.4)),
+                      side: BorderSide(
+                          color: AppColors.primary.withOpacity(0.4)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -373,26 +406,44 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _openPurchaseLink(Ebook ebook) async {
-    await _openExternalUrl(
-      'https://banglamed.net/choose-plan/${ebook.id}',
-      errorMessage: 'Unable to open purchase link for ${ebook.name}.',
+    final softcopy = _allEbookById[ebook.id];
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SubscriptionPage(
+          ebook: ebook,
+          softcopy: softcopy,
+          fallbackUrl: Uri.parse('https://banglamed.net/choose-plan/${ebook.id}'),
+        ),
+      ),
     );
   }
 
   Future<void> _openPurchaseCatalog() async {
-    await _openExternalUrl('https://banglamed.net/choose-plan');
-  }
-
-  Future<void> _openExternalUrl(String url, {String? errorMessage}) async {
-    final uri = Uri.parse(url);
-    if (!await canLaunchUrl(uri)) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage ?? 'Unable to open the link.')),
-      );
-      return;
-    }
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SubscriptionPage(
+          ebook: Ebook(
+            id: 0,
+            subcriptionId: 0,
+            image: '',
+            name: 'Banglamed Plans',
+            status: 0,
+            validity: '',
+            ending: '',
+            button: null,
+            statusText: '',
+            isExpired: false,
+          ),
+          softcopy: null,
+          fallbackUrl: Uri.parse('https://banglamed.net/choose-plan'),
+          showLegacyPlans: true,
+        ),
+      ),
+    );
   }
 
   Future<bool> _ensurePracticeAvailability(Ebook ebook) {
