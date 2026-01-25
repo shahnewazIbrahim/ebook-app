@@ -9,13 +9,13 @@ import 'custom_drawer.dart';
 /// App primary gradient (blue 600 → 800)
 /// ------------------------------
 LinearGradient appPrimaryGradient() => LinearGradient(
-  begin: Alignment.topLeft,
-  end: Alignment.bottomRight,
-  colors: [
-    AppColors.blueShade600,
-    AppColors.blueShade800,
-  ],
-);
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        AppColors.blueShade600,
+        AppColors.blueShade800,
+      ],
+    );
 
 /// ------------------------------
 /// GradientIcon: active হলে গ্রেডিয়েন্ট রঙ, না হলে স্লেট টোন
@@ -26,11 +26,11 @@ class GradientIcon extends StatelessWidget {
   final double size;
 
   const GradientIcon(
-      this.icon, {
-        super.key,
-        required this.active,
-        this.size = 24,
-      });
+    this.icon, {
+    super.key,
+    required this.active,
+    this.size = 24,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +64,14 @@ class AppLayout extends StatelessWidget {
   int _currentIndex(BuildContext context) {
     final name = ModalRoute.of(context)?.settings.name ?? '/';
     switch (name) {
-      case '/': return 0;
-      case '/ebooks': return 1;
-      case '/profile': return 2;
-      default: return 0;
+      case '/':
+        return 0;
+      case '/my-ebooks':
+        return 1;
+      case '/profile':
+        return 2;
+      default:
+        return 0;
     }
   }
 
@@ -101,18 +105,22 @@ class AppLayout extends StatelessWidget {
       // ===== Drawer =====
       endDrawer: showDrawer
           ? CustomDrawer(
-        title: 'My Ebooks',
-        onLoginTap:   () => Navigator.pushNamed(context, '/login'),
-        onHomeTap:    () => Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
-        onSettingsTap:() => Navigator.pushNamed(context, '/settings'),
-        onProfileTap: () => Navigator.pushNamed(context, '/profile'),
-      )
+              title: 'My Ebooks',
+              onLoginTap: () => Navigator.pushNamed(context, '/login'),
+              onHomeTap: () => Navigator.pushNamedAndRemoveUntil(
+                  context, '/', (route) => false),
+              onSettingsTap: () => Navigator.pushNamed(context, '/settings'),
+              onProfileTap: () => Navigator.pushNamed(context, '/profile'),
+              onDeviceVerificationTap: () =>
+                  Navigator.pushNamed(context, '/device-verification'),
+            )
           : null,
 
       // ===== Body =====
       body: SafeArea(
         child: Container(
           width: double.infinity,
+          height: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: body,
         ),
@@ -122,47 +130,53 @@ class AppLayout extends StatelessWidget {
       // কোনো অতিরিক্ত ব্যাকগ্রাউন্ড/কন্টেইনার নেই
       bottomNavigationBar: showNavBar
           ? NavigationBar(
-        backgroundColor: Colors.transparent, // surface-এ মিশে যায়
-        height: 64,
-        elevation: 0,
-        indicatorColor: AppColors.blueShade600.withOpacity(0.12), // subtle
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        selectedIndex: selected,
-        onDestinationSelected: (index) {
-          if (index == selected) return;
-          HapticFeedback.selectionClick();
+              backgroundColor: Colors.transparent, // surface-এ মিশে যায়
+              height: 64,
+              elevation: 0,
+              indicatorColor:
+                  AppColors.blueShade600.withOpacity(0.12), // subtle
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              selectedIndex: selected,
+              onDestinationSelected: (index) {
+                if (index == selected) return;
+                HapticFeedback.selectionClick();
 
-          switch (index) {
-            case 0:
-              Navigator.pushNamed(context, '/');
-              break;
-            case 1:
-            // Navigator.pushNamed(context, '/ebooks');
-              showUnderMaintenanceSnackbar();
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/profile');
-              break;
-          }
-        },
-        destinations: [
-          NavigationDestination(
-            icon: GradientIcon(Icons.home_rounded, active: false, size: 24),
-            selectedIcon: GradientIcon(Icons.home_rounded, active: true, size: 24),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: GradientIcon(Icons.library_books_rounded, active: false, size: 24),
-            selectedIcon: GradientIcon(Icons.library_books_rounded, active: true, size: 24),
-            label: 'Library',
-          ),
-          NavigationDestination(
-            icon: GradientIcon(Icons.account_circle_rounded, active: false, size: 24),
-            selectedIcon: GradientIcon(Icons.account_circle_rounded, active: true, size: 24),
-            label: 'Profile',
-          ),
-        ],
-      )
+                switch (index) {
+                  case 0:
+                    Navigator.pushNamed(context, '/');
+                    break;
+                  case 1:
+                    Navigator.pushNamed(context, '/my-ebooks');
+                    break;
+                  case 2:
+                    Navigator.pushNamed(context, '/profile');
+                    break;
+                }
+              },
+              destinations: [
+                NavigationDestination(
+                  icon:
+                      GradientIcon(Icons.home_rounded, active: false, size: 24),
+                  selectedIcon:
+                      GradientIcon(Icons.home_rounded, active: true, size: 24),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: GradientIcon(Icons.auto_stories_rounded,
+                      active: false, size: 24),
+                  selectedIcon: GradientIcon(Icons.auto_stories_rounded,
+                      active: true, size: 24),
+                  label: 'My Ebooks',
+                ),
+                NavigationDestination(
+                  icon: GradientIcon(Icons.account_circle_rounded,
+                      active: false, size: 24),
+                  selectedIcon: GradientIcon(Icons.account_circle_rounded,
+                      active: true, size: 24),
+                  label: 'Profile',
+                ),
+              ],
+            )
           : null,
     );
   }
