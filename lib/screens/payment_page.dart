@@ -60,14 +60,17 @@ class _PaymentPageState extends State<PaymentPage> {
               });
             },
             shouldOverrideUrlLoading: (controller, navigationAction) async {
-              final uri = navigationAction.request.url?.uri;
+              final urlString = navigationAction.request.url?.toString();
+              final uri = urlString != null ? Uri.tryParse(urlString) : null;
               if (uri != null && _detectSuccess(uri)) {
                 _notifySuccess();
               }
               return NavigationActionPolicy.ALLOW;
             },
             onLoadStop: (controller, uri) {
-              if (uri != null && _detectSuccess(uri)) {
+              final urlString = uri?.toString();
+              final parsed = urlString != null ? Uri.tryParse(urlString) : null;
+              if (parsed != null && _detectSuccess(parsed)) {
                 _notifySuccess();
               }
             },
