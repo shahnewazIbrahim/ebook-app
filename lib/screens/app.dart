@@ -19,7 +19,8 @@ import 'login.dart';
 import 'my_ebooks_page.dart';
 import 'subscription_page.dart';
 
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 class MyApp extends StatelessWidget {
   final String initialRoute;
@@ -265,10 +266,10 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
               onBuyTap: _openPurchaseLink,
             ),
           ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _buildDeviceVerificationCard() {
     final theme = Theme.of(context);
@@ -371,8 +372,8 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
                   child: OutlinedButton(
                     onPressed: () => _openPurchaseLink(ebook),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                          color: AppColors.primary.withOpacity(0.4)),
+                      side:
+                          BorderSide(color: AppColors.primary.withOpacity(0.4)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -408,21 +409,25 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
   Future<void> _openPurchaseLink(Ebook ebook) async {
     final softcopy = _allEbookById[ebook.id];
     if (!mounted) return;
-    Navigator.push(
+    final success = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => SubscriptionPage(
           ebook: ebook,
           softcopy: softcopy,
-          fallbackUrl: Uri.parse('https://banglamed.net/choose-plan/${ebook.id}'),
+          fallbackUrl:
+              Uri.parse('https://banglamed.net/choose-plan/${ebook.id}'),
         ),
       ),
     );
+    if (success == true) {
+      await fetchEbooks();
+    }
   }
 
   Future<void> _openPurchaseCatalog() async {
     if (!mounted) return;
-    Navigator.push(
+    final success = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => SubscriptionPage(
@@ -444,6 +449,9 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
         ),
       ),
     );
+    if (success == true) {
+      await fetchEbooks();
+    }
   }
 
   Future<bool> _ensurePracticeAvailability(Ebook ebook) {

@@ -3,16 +3,20 @@ import 'package:ebook_project/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
+typedef PaymentSuccessCallback = void Function();
+
 class PaymentPage extends StatefulWidget {
   final String title;
   final Uri url;
   final String? subtitle;
+  final PaymentSuccessCallback? onSuccess;
 
   const PaymentPage({
     super.key,
     required this.title,
     required this.url,
     this.subtitle,
+    this.onSuccess,
   });
 
   @override
@@ -22,6 +26,7 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   double _progress = 0;
   bool _hasError = false;
+  bool _handledSuccess = false;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +58,18 @@ class _PaymentPageState extends State<PaymentPage> {
               setState(() {
                 _hasError = true;
               });
+            },
+            shouldOverrideUrlLoading: (controller, navigationAction) async {
+              final uri = navigationAction.request.url?.uri;
+              if (uri != null && _detectSuccess(uri)) {
+                _notifySuccess();
+              }
+              return NavigationActionPolicy.ALLOW;
+            },
+            onLoadStop: (controller, uri) {
+              if (uri != null && _detectSuccess(uri)) {
+                _notifySuccess();
+              }
             },
           ),
           if (_progress < 1 && !_hasError)
@@ -100,5 +117,25 @@ class _PaymentPageState extends State<PaymentPage> {
         ],
       ),
     );
+  }
+
+  bool _detectSuccess(Uri uri) {
+    final path = uri.path.toLowerCase();
+    if (_handledSuccess) return false;
+    if ((path.contains('/bkash/choose-plan/') ||
+            path.contains('/bkash/callback')) &&
+        uri.queryParameters.containsKey('payment_id')) {
+      return true;
+    }
+    return false;
+  }
+
+  void _notifySuccess() {
+    if (_handledSuccess) return;
+    _handledSuccess = true;
+    widget.onSuccess?.call();
+    if (mounted) {
+      Navigator.of(context).pop(true);
+    }
   }
 }

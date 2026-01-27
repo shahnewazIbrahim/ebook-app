@@ -236,7 +236,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         final redirectUri = urlString != null ? Uri.tryParse(urlString) : null;
         if (redirectUri != null) {
           if (!mounted) return;
-          await Navigator.push(
+          final success = await Navigator.push<bool>(
             context,
             MaterialPageRoute(
               builder: (_) => PaymentPage(
@@ -248,6 +248,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               ),
             ),
           );
+          if (success == true && mounted) {
+            _showMessage('Payment success! Refreshing your library.');
+            Navigator.of(context).pop(true);
+          }
           return;
         }
         _showMessage('Payment link is not available right now.');
