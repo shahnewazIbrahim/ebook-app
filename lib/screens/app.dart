@@ -427,6 +427,7 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
     );
     if (success == true) {
       await fetchEbooks();
+      Navigator.pushNamed(context, '/my-ebooks');
     }
   }
 
@@ -456,6 +457,7 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
     );
     if (success == true) {
       await fetchEbooks();
+      Navigator.pushNamed(context, '/my-ebooks');
     }
   }
 

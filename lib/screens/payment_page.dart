@@ -3,13 +3,13 @@ import 'package:ebook_project/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-typedef PaymentSuccessCallback = void Function();
+typedef PaymentResultCallback = void Function(bool success, String? status);
 
 class PaymentPage extends StatefulWidget {
   final String title;
   final Uri url;
   final String? subtitle;
-  final PaymentSuccessCallback? onSuccess;
+  final PaymentResultCallback? onSuccess;
 
   const PaymentPage({
     super.key,
@@ -26,7 +26,7 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   double _progress = 0;
   bool _hasError = false;
-  bool _handledSuccess = false;
+  bool _handledResult = false;
 
   @override
   Widget build(BuildContext context) {
@@ -62,16 +62,16 @@ class _PaymentPageState extends State<PaymentPage> {
             shouldOverrideUrlLoading: (controller, navigationAction) async {
               final urlString = navigationAction.request.url?.toString();
               final uri = urlString != null ? Uri.tryParse(urlString) : null;
-              if (uri != null && _detectSuccess(uri)) {
-                _notifySuccess();
+              if (uri != null && _handleCallbackUri(uri)) {
+                return NavigationActionPolicy.CANCEL;
               }
               return NavigationActionPolicy.ALLOW;
             },
             onLoadStop: (controller, uri) {
               final urlString = uri?.toString();
               final parsed = urlString != null ? Uri.tryParse(urlString) : null;
-              if (parsed != null && _detectSuccess(parsed)) {
-                _notifySuccess();
+              if (parsed != null && _handleCallbackUri(parsed)) {
+                return;
               }
             },
           ),
@@ -122,23 +122,26 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-  bool _detectSuccess(Uri uri) {
+  bool _handleCallbackUri(Uri uri) {
     final path = uri.path.toLowerCase();
-    if (_handledSuccess) return false;
-    if ((path.contains('/bkash/choose-plan/') ||
-            path.contains('/bkash/callback')) &&
-        uri.queryParameters.containsKey('payment_id')) {
+    if (_handledResult) return false;
+    if (path.contains('/bkash/choose-plan/') ||
+        path.contains('/bkash/callback')) {
+      final status = uri.queryParameters['status']?.toLowerCase();
+      final paymentId = uri.queryParameters['payment_id'];
+      final success = status == 'success' || paymentId != null;
+      _handledResult = true;
+      _finish(success);
       return true;
     }
     return false;
   }
 
-  void _notifySuccess() {
-    if (_handledSuccess) return;
-    _handledSuccess = true;
-    widget.onSuccess?.call();
+  void _finish(bool success) {
+    final status = success ? 'success' : 'failure';
+    widget.onSuccess?.call(success, status);
     if (mounted) {
-      Navigator.of(context).pop(true);
+      Navigator.of(context).pop(success);
     }
   }
 }

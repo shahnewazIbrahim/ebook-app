@@ -236,23 +236,27 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         final redirectUri = urlString != null ? Uri.tryParse(urlString) : null;
         if (redirectUri != null) {
           if (!mounted) return;
-          final success = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder: (_) => PaymentPage(
-                url: redirectUri,
-                title: widget.ebook.name.isNotEmpty
-                    ? widget.ebook.name
-                    : 'Subscription',
-                subtitle: 'Pay ${plan.payableAmount} TK',
-              ),
+        final result = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PaymentPage(
+              url: redirectUri,
+              title: widget.ebook.name.isNotEmpty
+                  ? widget.ebook.name
+                  : 'Subscription',
+              subtitle: 'Pay ${plan.payableAmount} TK',
             ),
-          );
-          if (success == true && mounted) {
+          ),
+        );
+        if (mounted) {
+          if (result == true) {
             _showMessage('Payment success! Refreshing your library.');
             Navigator.of(context).pop(true);
+          } else {
+            _showMessage('Payment was cancelled or failed.');
           }
-          return;
+        }
+        return;
         }
         _showMessage('Payment link is not available right now.');
         return;
