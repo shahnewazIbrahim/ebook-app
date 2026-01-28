@@ -243,6 +243,10 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
     );
   }
 
+  Future<void> _handleHomeCardTap(BuildContext context, Ebook ebook) async {
+    await _openPurchaseLink(ebook);
+  }
+
   Widget _buildLoadedBody() {
     final pendingEbooks = ebooks.where((ebook) => !_isActive(ebook)).toList();
 
@@ -262,8 +266,9 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
               ebooks: ebooks,
               isLoading: isLoading,
               practiceAvailability: _practiceAvailability,
-              onCardTap: _handleCardTap,
+              onCardTap: _handleHomeCardTap,
               onBuyTap: _openPurchaseLink,
+              showStatusBadge: false,
             ),
           ),
         ],

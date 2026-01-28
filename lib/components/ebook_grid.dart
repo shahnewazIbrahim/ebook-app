@@ -10,6 +10,7 @@ class EbookGrid extends StatelessWidget {
   final Map<int, bool?> practiceAvailability;
   final Future<void> Function(BuildContext, Ebook) onCardTap;
   final Future<void> Function(Ebook)? onBuyTap;
+  final bool showStatusBadge;
 
   const EbookGrid({
     super.key,
@@ -18,6 +19,7 @@ class EbookGrid extends StatelessWidget {
     required this.practiceAvailability,
     required this.onCardTap,
     this.onBuyTap,
+    this.showStatusBadge = true,
   });
 
   @override
@@ -45,6 +47,7 @@ class EbookGrid extends StatelessWidget {
             hasPractice: practiceAvailability[ebooks[i].id],
             onCardTap: onCardTap,
             onBuyTap: onBuyTap,
+            showStatusBadge: showStatusBadge,
           ),
         );
       },
@@ -72,6 +75,7 @@ class _EbookGridCard extends StatelessWidget {
   final bool? hasPractice;
   final Future<void> Function(BuildContext, Ebook) onCardTap;
   final Future<void> Function(Ebook)? onBuyTap;
+  final bool showStatusBadge;
 
   const _EbookGridCard({
     required this.ebook,
@@ -79,6 +83,7 @@ class _EbookGridCard extends StatelessWidget {
     this.hasPractice,
     required this.onCardTap,
     this.onBuyTap,
+    this.showStatusBadge = true,
   });
 
   String? get _normalizedStatus {
@@ -214,40 +219,42 @@ class _EbookGridCard extends StatelessWidget {
                                 'https://banglamed.s3.ap-south-1.amazonaws.com/images/default_book.png',
                           ),
                         ),
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: IgnorePointer(
-                            ignoring: true,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: _statusColor,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.white, width: 1),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0x33000000),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
+                        if (showStatusBadge)
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: IgnorePointer(
+                              ignoring: true,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: _statusColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border:
+                                      Border.all(color: Colors.white, width: 1),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x33000000),
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  _isExpired
+                                      ? 'Expired'
+                                      : (_isActive ? 'Active' : 'Pending'),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.0,
                                   ),
-                                ],
-                              ),
-                              child: Text(
-                                _isExpired
-                                    ? 'Expired'
-                                    : (_isActive ? 'Active' : 'Pending'),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w700,
-                                  height: 1.0,
                                 ),
                               ),
                             ),
                           ),
-                        ),
                         Positioned(
                           right: 10,
                           bottom: 10,
@@ -256,9 +263,7 @@ class _EbookGridCard extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   Builder(builder: (context) {
                     final titleBoxH = dense ? 36.0 : 48.0;
                     return SizedBox(
@@ -273,8 +278,8 @@ class _EbookGridCard extends StatelessWidget {
                               maxWidth: c.maxWidth,
                             ),
                             child: MediaQuery(
-                              data: MediaQuery.of(context)
-                                  .copyWith(textScaler: const TextScaler.linear(1.0)),
+                              data: MediaQuery.of(context).copyWith(
+                                  textScaler: const TextScaler.linear(1.0)),
                               child: Text(
                                 ebook.name,
                                 softWrap: true,
@@ -294,14 +299,13 @@ class _EbookGridCard extends StatelessWidget {
                       ),
                     );
                   }),
-
                   if (!dense) ...[
                     const SizedBox(height: 6),
-                    _TinyMeta(icon: Icons.timelapse_outlined, value: ebook.validity),
+                    _TinyMeta(
+                        icon: Icons.timelapse_outlined, value: ebook.validity),
                     const SizedBox(height: 3),
                     _TinyMeta(icon: Icons.event_outlined, value: ebook.ending),
                   ],
-
                   const SizedBox(height: 8),
                   if (onBuyTap != null) _buildBuyButton(),
                 ],
@@ -363,7 +367,8 @@ class _CoverImage extends StatelessWidget {
         return Container(
           color: Colors.grey.shade200,
           child: const Center(
-            child: Icon(Icons.menu_book_outlined, size: 36, color: Colors.black38),
+            child:
+                Icon(Icons.menu_book_outlined, size: 36, color: Colors.black38),
           ),
         );
       },
@@ -375,13 +380,14 @@ class _CoverImage extends StatelessWidget {
             return Container(
               color: Colors.grey.shade200,
               child: const Center(
-                child: Icon(Icons.menu_book_outlined, size: 36, color: Colors.black38),
+                child: Icon(Icons.menu_book_outlined,
+                    size: 36, color: Colors.black38),
               ),
             );
           },
         );
       },
-      );
+    );
   }
 
   String _normalize(String url) {
